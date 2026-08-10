@@ -1,0 +1,92 @@
+# Ours Design System
+
+Swift package implementing the **Ours** design language — tokens, fonts and base components
+for the Coterie iOS app.
+
+Part of a four-repo project:
+
+| Repo | Contents |
+|---|---|
+| [`coterie-design`](https://github.com/suigeneris/coterie-design) | this repo — the design system as a Swift package |
+| [`coterie-ios`](https://github.com/suigeneris/coterie-ios) | SwiftUI app |
+| [`coterie-backend`](https://github.com/suigeneris/coterie-backend) | Supabase schema, migrations, RLS, pgTAP |
+| [`coterie-docs`](https://github.com/suigeneris/coterie-docs) | spec, plans, and the design system **source of truth** |
+
+The written system and its 14 plates live in `coterie-docs/design/`. This package is the
+Swift translation of it. **When they disagree, the docs win** — change them first, then this.
+
+## Install
+
+```swift
+.package(url: "https://github.com/suigeneris/coterie-design.git", from: "0.1.0")
+```
+
+Or in `project.yml` for an XcodeGen project:
+
+```yaml
+packages:
+  OursDesignSystem:
+    url: https://github.com/suigeneris/coterie-design
+    from: "0.1.0"
+```
+
+## Use
+
+```swift
+import OursDesignSystem
+
+VStack(spacing: OursSpacing.md) {
+    Text("luxury, together")
+        .oursTextStyle(.display)
+        .foregroundStyle(OursColor.ink)
+
+    OursBadge("3 of 4 shares", tone: .attention)
+
+    OursButton("Buy this share") { … }
+}
+.padding(OursScreenMargin.standard)
+.background(OursColor.backgroundPrimary)
+```
+
+## What's in it
+
+| | |
+|---|---|
+| `OursColor` | Brand, neutral, surface and semantic colours |
+| `OursTextStyle` | The 9-step type scale, Dynamic Type aware, with specified line heights |
+| `OursSpacing` · `OursRadius` · `OursSize` · `OursScreenMargin` | 4pt grid, radius scale, fixed sizes |
+| `OursElevation` | Three levels, with the shadow and border each specifies |
+| `OursMotion` | Durations, animations, and Reduce Motion handling |
+| `OursButton` · `OursBadge` | Base components |
+
+## What's deliberately not in it
+
+**Anything that knows about the product.** No `Pool`, no `Profile`, no domain models. Product
+components — pool cards, cap tables, co-owner stacks — are composed from these primitives in
+the app, not here. The moment this package imports a domain type it stops being a design
+system and becomes a second app target.
+
+## Fonts
+
+Instrument Serif and Inter, both open-source (SIL OFL, licences included alongside them).
+
+Fonts inside a Swift package **cannot** be declared in the host app's `UIAppFonts` — that key
+only sees the app bundle. They're registered at runtime from `Bundle.module` via Core Text,
+automatically on first use of any type token. Callers don't need to do anything; call
+`OursFonts.registerIfNeeded()` explicitly only if you want to pay that cost at launch.
+
+## Tests
+
+```bash
+xcodebuild test -scheme OursDesignSystem -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+The suite is mostly guards rather than examples. The one worth knowing about computes
+**WCAG contrast for every text token against both grounds** and fails below 4.5:1. Three
+tokens in the source plates failed that bar and were darkened; this test is what stops them
+drifting back. It is verified to bite — reverting `stone` to the plate's `#A3A3A3` fails with
+2.28:1 and 2.52:1.
+
+Others check that the serif stays reserved for headlines, that the spacing scale stays on the
+4pt grid, that touch targets meet 44pt, and that every font file is present in the resource
+bundle.
