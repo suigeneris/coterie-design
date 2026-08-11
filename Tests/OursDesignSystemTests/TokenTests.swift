@@ -95,13 +95,15 @@ struct TypographyTests {
         #expect(OursTextStyle.body.lineHeight == 22)
         #expect(OursTextStyle.caption.lineHeight == 16)
         #expect(OursTextStyle.button.lineHeight == nil)
+        #expect(OursTextStyle.bodyLargeStrong.lineHeight == OursTextStyle.bodyLarge.lineHeight)
     }
 
     @Test func serifIsReservedForHeadlines() {
         for style in [OursTextStyle.display, .h1, .h2] {
             #expect(style.fontName == .serifRegular)
         }
-        for style in [OursTextStyle.h3, .bodyLarge, .body, .bodySmall, .caption, .button] {
+        for style in [OursTextStyle.h3, .bodyLarge, .bodyLargeStrong, .body,
+                      .bodySmall, .caption, .button] {
             #expect(style.fontName != .serifRegular, "\(style) should use Inter")
         }
     }
@@ -116,7 +118,8 @@ struct FontRegistrationTests {
             OursFontName.serifRegular,
             .serifItalic,
             .interRegular,
-            .interSemiBold
+            .interSemiBold,
+            .interBold
         ] {
             let font = UIFont(name: name.rawValue, size: 17)
             #expect(font != nil, "\(name.rawValue) did not resolve — registration failed")
@@ -127,7 +130,7 @@ struct FontRegistrationTests {
     /// Catches a resource being dropped from the package manifest.
     @Test func everyFontFileIsPresentInTheBundle() {
         for name in ["DMSerifDisplay-Regular", "DMSerifDisplay-Italic",
-                     "Inter-Regular", "Inter-SemiBold"] {
+                     "Inter-Regular", "Inter-SemiBold", "Inter-Bold"] {
             #expect(
                 Bundle.module.url(forResource: name, withExtension: "ttf") != nil,
                 "\(name).ttf missing from the resource bundle"

@@ -7,6 +7,7 @@ enum OursFontName: String {
     case serifItalic = "DMSerifDisplay-Italic"
     case interRegular = "Inter-Regular"
     case interSemiBold = "Inter-SemiBold"
+    case interBold = "Inter-Bold"
 }
 
 /// Registers the bundled fonts with Core Text.
@@ -27,7 +28,8 @@ public enum OursFonts {
         "DMSerifDisplay-Regular",
         "DMSerifDisplay-Italic",
         "Inter-Regular",
-        "Inter-SemiBold"
+        "Inter-SemiBold",
+        "Inter-Bold"
     ]
 
     private static let registered: Bool = {

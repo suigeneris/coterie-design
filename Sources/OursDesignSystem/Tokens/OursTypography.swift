@@ -17,6 +17,9 @@ public enum OursTextStyle: CaseIterable, Sendable {
     case h3
     /// Inter Regular 17/24 — prominent body.
     case bodyLarge
+    /// Inter Bold 17/24 — strong label at body-large size. Fills the gap between `h3` and
+    /// `bodyLarge`: the same size as body copy, but heavy enough to read as a heading.
+    case bodyLargeStrong
     /// Inter Regular 15/22 — default body.
     case body
     /// Inter Regular 13/18 — supporting text and labels.
@@ -32,7 +35,7 @@ public enum OursTextStyle: CaseIterable, Sendable {
         case .h1: 32
         case .h2: 24
         case .h3: 20
-        case .bodyLarge: 17
+        case .bodyLarge, .bodyLargeStrong: 17
         case .button: 16
         case .body: 15
         case .bodySmall: 13
@@ -47,7 +50,7 @@ public enum OursTextStyle: CaseIterable, Sendable {
         case .h1: 40
         case .h2: 32
         case .h3: 28
-        case .bodyLarge: 24
+        case .bodyLarge, .bodyLargeStrong: 24
         case .body: 22
         case .bodySmall: 18
         case .caption: 16
@@ -59,6 +62,7 @@ public enum OursTextStyle: CaseIterable, Sendable {
         switch self {
         case .display, .h1, .h2: .serifRegular
         case .h3, .button: .interSemiBold
+        case .bodyLargeStrong: .interBold
         case .bodyLarge, .body, .bodySmall, .caption: .interRegular
         }
     }
@@ -70,7 +74,7 @@ public enum OursTextStyle: CaseIterable, Sendable {
         case .h1: .title
         case .h2: .title2
         case .h3: .title3
-        case .bodyLarge: .body
+        case .bodyLarge, .bodyLargeStrong: .body
         case .button: .body
         case .body: .callout
         case .bodySmall: .footnote
