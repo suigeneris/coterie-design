@@ -45,10 +45,13 @@ public enum OursColor {
     /// Border of a focused input.
     ///
     /// §11 asks for "a lavender border" when focused, but the palette's lavenders are all
-    /// pale backing tints — `lavender` measures 1.16:1 on white, so a border drawn in it is
-    /// effectively invisible and misses the 3:1 that WCAG asks of a control boundary. This is
-    /// the same lavender hue taken down to 4.39:1, which reads clearly as a focus state.
-    public static let focus = Color(ours: 0x8F64C3)
+    /// pale backing tints. `lavender` measures 1.22:1 on a white field and `mist` — the
+    /// resting border — measures 1.26:1, so swapping one for the other changes the hue and
+    /// almost nothing else; the focused state would not read as a state. At 3.03:1 this does.
+    ///
+    /// Like `info`, it sits on the minimum with no headroom. Darkening it is safe; lightening
+    /// it is not.
+    public static let focus = Color(ours: 0x9D87DC)
 
     // MARK: Surfaces
 
