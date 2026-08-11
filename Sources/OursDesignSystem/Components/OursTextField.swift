@@ -23,8 +23,12 @@ public enum OursTextFieldBorder {
     }
 }
 
-/// A text field in the Ours style: 56pt tall, `radiusXs`, with default, focused, filled,
+/// A text field in the Ours style: 56pt tall, `radiusMd`, with default, focused, filled,
 /// disabled and error states, an optional leading icon and a reveal toggle when secure.
+///
+/// Matches `OursButton`'s radius deliberately. §04 lists inputs under both `radiusXs` and
+/// `radiusMd`, but the plates draw fields and buttons at the same roundness — measured, both
+/// sit at about 14% of their height — so whatever buttons use, fields use too.
 ///
 /// Pass `errorMessage` to put the field in its error state; the message renders beneath it.
 public struct OursTextField: View {
@@ -90,9 +94,9 @@ public struct OursTextField: View {
         .padding(.horizontal, OursSpacing.md)
         .frame(height: OursSize.fieldHeight)
         .background(isEnabled ? OursColor.surfaceBase : OursColor.disabled)
-        .clipShape(RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous)
+            RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
                 .strokeBorder(
                     OursTextFieldBorder.color(
                         isFocused: isFocused,
