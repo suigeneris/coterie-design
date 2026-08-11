@@ -65,6 +65,9 @@ struct ContrastTests {
                              ("yellow", OursColor.yellow)] {
             #expect(contrast(OursColor.ink, fill) >= 4.5, "ink on \(name)")
             #expect(contrast(OursColor.forest, fill) >= 4.5, "forest on \(name)")
+            // Secondary text passes over these too, now that the sign-up decoration drifts
+            // its shapes underneath the copy.
+            #expect(contrast(OursColor.slate, fill) >= 4.5, "slate on \(name)")
         }
     }
 
