@@ -7,19 +7,40 @@ public enum OursTextFieldKind: Sendable {
     case secure
 }
 
+/// What a field is currently saying about its contents.
+public enum OursFieldState: Equatable, Sendable {
+    case neutral
+    /// Something is wrong, with the reason.
+    case error(String)
+    /// Resolved, with an optional short confirmation.
+    case success(String? = nil)
+
+    var message: String? {
+        switch self {
+        case .neutral: nil
+        case .error(let text): text
+        case .success(let text): text
+        }
+    }
+}
+
 /// Resolves a field's border. Pure, so it can be tested without rendering.
 ///
-/// Error outranks focus: a field the user is fixing should keep showing what is wrong while
-/// they type in it.
+/// Both states outrank focus. A field the user is fixing must keep showing what is wrong
+/// while they type in it, and the moment it comes right they need to see that — which is
+/// exactly while it is still focused.
 public enum OursTextFieldBorder {
-    public static func color(isFocused: Bool, hasError: Bool, isEnabled: Bool) -> Color {
-        if hasError { return OursColor.error }
+    public static func color(state: OursFieldState, isFocused: Bool, isEnabled: Bool) -> Color {
         guard isEnabled else { return OursColor.mist }
-        return isFocused ? OursColor.focus : OursColor.mist
+        switch state {
+        case .error: return OursColor.error
+        case .success: return OursColor.success
+        case .neutral: return isFocused ? OursColor.focus : OursColor.mist
+        }
     }
 
-    public static func width(isFocused: Bool, hasError: Bool) -> CGFloat {
-        isFocused || hasError ? 2 : 1
+    public static func width(state: OursFieldState, isFocused: Bool) -> CGFloat {
+        state == .neutral && !isFocused ? 1 : 2
     }
 }
 
@@ -30,13 +51,13 @@ public enum OursTextFieldBorder {
 /// `radiusMd`, but the plates draw fields and buttons at the same roundness — measured, both
 /// sit at about 14% of their height — so whatever buttons use, fields use too.
 ///
-/// Pass `errorMessage` to put the field in its error state; the message renders beneath it.
+/// Pass `state` to put the field in its error or success state; the message renders beneath.
 public struct OursTextField: View {
     private let placeholder: String
     private let text: Binding<String>
     private let kind: OursTextFieldKind
     private let systemImage: String?
-    private let errorMessage: String?
+    private let state: OursFieldState
 
     @FocusState private var isFocused: Bool
     @State private var isRevealed = false
@@ -47,24 +68,30 @@ public struct OursTextField: View {
         text: Binding<String>,
         kind: OursTextFieldKind = .plain,
         systemImage: String? = nil,
-        errorMessage: String? = nil
+        state: OursFieldState = .neutral
     ) {
         self.placeholder = placeholder
         self.text = text
         self.kind = kind
         self.systemImage = systemImage
-        self.errorMessage = errorMessage
+        self.state = state
     }
 
-    private var hasError: Bool { errorMessage != nil }
+    private var messageColor: Color {
+        switch state {
+        case .error: OursColor.error
+        case .success: OursColor.success
+        case .neutral: OursColor.stone
+        }
+    }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: OursSpacing.xxs) {
             field
-            if let errorMessage {
-                Text(errorMessage)
+            if let message = state.message {
+                Text(message)
                     .oursTextStyle(.bodySmall)
-                    .foregroundStyle(OursColor.error)
+                    .foregroundStyle(messageColor)
                     .padding(.horizontal, OursSpacing.xxs)
             }
         }
@@ -87,6 +114,14 @@ public struct OursTextField: View {
                 .foregroundStyle(isEnabled ? OursColor.ink : OursColor.stone)
                 .tint(OursColor.focus)
 
+            if case .success = state {
+                // Ahead of the reveal toggle rather than replacing it: a secure field still
+                // needs its toggle, and the tick is the smaller of the two claims on the slot.
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(OursColor.success)
+                    .accessibilityHidden(true)
+            }
+
             if kind == .secure {
                 revealToggle
             }
@@ -99,11 +134,11 @@ public struct OursTextField: View {
             RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
                 .strokeBorder(
                     OursTextFieldBorder.color(
+                        state: state,
                         isFocused: isFocused,
-                        hasError: hasError,
                         isEnabled: isEnabled
                     ),
-                    lineWidth: OursTextFieldBorder.width(isFocused: isFocused, hasError: hasError)
+                    lineWidth: OursTextFieldBorder.width(state: state, isFocused: isFocused)
                 )
         }
         // The whole container is the target, not just the glyphs inside it.

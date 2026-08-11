@@ -205,23 +205,39 @@ struct ButtonColourTests {
 
 struct TextFieldBorderTests {
     @Test func restingFieldsUseTheHairlineBorder() {
-        #expect(OursTextFieldBorder.color(isFocused: false, hasError: false, isEnabled: true) == OursColor.mist)
-        #expect(OursTextFieldBorder.width(isFocused: false, hasError: false) == 1)
+        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: false, isEnabled: true) == OursColor.mist)
+        #expect(OursTextFieldBorder.width(state: .neutral, isFocused: false) == 1)
     }
 
     @Test func focusIsVisible() {
-        #expect(OursTextFieldBorder.color(isFocused: true, hasError: false, isEnabled: true) == OursColor.focus)
-        #expect(OursTextFieldBorder.width(isFocused: true, hasError: false) == 2)
+        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: true, isEnabled: true) == OursColor.focus)
+        #expect(OursTextFieldBorder.width(state: .neutral, isFocused: true) == 2)
     }
 
     /// A field the user is fixing must keep showing what is wrong while they type in it.
     @Test func errorOutranksFocus() {
-        #expect(OursTextFieldBorder.color(isFocused: true, hasError: true, isEnabled: true) == OursColor.error)
+        #expect(OursTextFieldBorder.color(state: .error("bad"), isFocused: true, isEnabled: true) == OursColor.error)
     }
 
-    /// A disabled field never draws attention, even if focus state is stale.
+    /// The moment a field comes right is while it is still focused. If focus outranked
+    /// success, the confirmation would only appear after the user had already moved on.
+    @Test func successOutranksFocus() {
+        #expect(OursTextFieldBorder.color(state: .success(), isFocused: true, isEnabled: true) == OursColor.success)
+        #expect(OursTextFieldBorder.width(state: .success(), isFocused: false) == 2)
+    }
+
+    /// A disabled field never draws attention, even if its state is stale.
     @Test func disabledStaysNeutral() {
-        #expect(OursTextFieldBorder.color(isFocused: true, hasError: false, isEnabled: false) == OursColor.mist)
+        for state in [OursFieldState.neutral, .error("bad"), .success()] {
+            #expect(OursTextFieldBorder.color(state: state, isFocused: true, isEnabled: false) == OursColor.mist)
+        }
+    }
+
+    @Test func onlyStatesCarryingAMessageExposeOne() {
+        #expect(OursFieldState.neutral.message == nil)
+        #expect(OursFieldState.error("bad").message == "bad")
+        #expect(OursFieldState.success().message == nil)
+        #expect(OursFieldState.success("Looks good").message == "Looks good")
     }
 
     /// The reason `focus` exists rather than reusing `lavender`: a border is UI, so it owes
@@ -230,5 +246,13 @@ struct TextFieldBorderTests {
         let ratio = contrast(OursColor.focus, OursColor.surfaceBase)
         #expect(ratio >= 3.0, "focus on surfaceBase is \(String(format: "%.2f", ratio)):1")
         #expect(contrast(OursColor.lavender, OursColor.surfaceBase) < 3.0, "lavender would not have")
+    }
+
+    /// Error and success borders are the other two state signals, and owe the same 3:1.
+    @Test func stateBordersMeetUIContrast() {
+        for (name, color) in [("error", OursColor.error), ("success", OursColor.success)] {
+            let ratio = contrast(color, OursColor.surfaceBase)
+            #expect(ratio >= 3.0, "\(name) on surfaceBase is \(String(format: "%.2f", ratio)):1")
+        }
     }
 }
