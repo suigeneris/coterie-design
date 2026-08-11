@@ -78,24 +78,35 @@ public extension View {
 public struct OursButton: View {
     private let title: String
     private let kind: OursButtonKind
+    private let systemImage: String?
     private let isLoading: Bool
     private let action: () -> Void
 
     public init(
         _ title: String,
         kind: OursButtonKind = .primary,
+        systemImage: String? = nil,
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.kind = kind
+        self.systemImage = systemImage
         self.isLoading = isLoading
         self.action = action
     }
 
     public var body: some View {
         Button(action: action) {
-            Text(title)
+            HStack(spacing: OursSpacing.xs) {
+                if let systemImage {
+                    // Decorative: the label already says what the button does.
+                    Image(systemName: systemImage)
+                        .imageScale(.medium)
+                        .accessibilityHidden(true)
+                }
+                Text(title)
+            }
         }
         .buttonStyle(OursButtonStyle(kind: kind, isLoading: isLoading))
         .disabled(isLoading)
