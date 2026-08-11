@@ -57,7 +57,9 @@ struct ContrastTests {
     }
 
     @Test func textOnBrandFillsMeetsAA() {
-        for (name, fill) in [("lavender", OursColor.lavender), ("yellow", OursColor.yellow)] {
+        for (name, fill) in [("lavender", OursColor.lavender),
+                             ("periwinkle", OursColor.periwinkle),
+                             ("yellow", OursColor.yellow)] {
             #expect(contrast(OursColor.ink, fill) >= 4.5, "ink on \(name)")
             #expect(contrast(OursColor.forest, fill) >= 4.5, "forest on \(name)")
         }
@@ -68,6 +70,7 @@ struct ContrastTests {
     @Test func brandFillsRemainUnusableAsTextOnWhite() {
         #expect(contrast(OursColor.yellow, .white) < 3.0)
         #expect(contrast(OursColor.lavender, .white) < 3.0)
+        #expect(contrast(OursColor.periwinkle, .white) < 3.0)
     }
 }
 

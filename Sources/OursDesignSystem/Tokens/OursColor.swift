@@ -16,6 +16,10 @@ public enum OursColor {
     public static let lavender = Color(ours: 0xE9E6FF)
     /// Attention badges and small accents. Fill only — 1.34:1 against white.
     public static let yellow = Color(ours: 0xF2E074)
+    /// Secondary feature surface, paired with `lavender` in layered compositions.
+    /// Fill only. Reinstated for the onboarding card stack; never use it to distinguish a
+    /// state from `lavender`, which it is too close to in value.
+    public static let periwinkle = Color(ours: 0xC9D3F3)
 
     // MARK: Neutrals
 
