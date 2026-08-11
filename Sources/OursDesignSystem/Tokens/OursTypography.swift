@@ -2,16 +2,16 @@ import SwiftUI
 
 /// The Ours type scale.
 ///
-/// Instrument Serif carries headlines and editorial moments; Inter carries everything
+/// DM Serif Display carries headlines and editorial moments; Inter carries everything
 /// functional. The serif's impact comes from its contrast with Inter — use it selectively.
 ///
 /// Every style scales with Dynamic Type via `relativeTo:`.
 public enum OursTextStyle: CaseIterable, Sendable {
-    /// Instrument Serif Regular 40/48 — hero headlines. May grow to 48pt for onboarding.
+    /// DM Serif Display Regular 40/48 — hero headlines. May grow to 48pt for onboarding.
     case display
-    /// Instrument Serif Regular 32/40 — page and section titles.
+    /// DM Serif Display Regular 32/40 — page and section titles.
     case h1
-    /// Instrument Serif Regular 24/32 — sub-section titles.
+    /// DM Serif Display Regular 24/32 — sub-section titles.
     case h2
     /// Inter Semibold 20/28 — card titles and strong labels.
     case h3
@@ -57,7 +57,7 @@ public enum OursTextStyle: CaseIterable, Sendable {
 
     var fontName: OursFontName {
         switch self {
-        case .display, .h1, .h2: .instrumentSerifRegular
+        case .display, .h1, .h2: .serifRegular
         case .h3, .button: .interSemiBold
         case .bodyLarge, .body, .bodySmall, .caption: .interRegular
         }

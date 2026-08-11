@@ -3,8 +3,8 @@ import Foundation
 
 /// PostScript names of the bundled faces.
 enum OursFontName: String {
-    case instrumentSerifRegular = "InstrumentSerif-Regular"
-    case instrumentSerifItalic = "InstrumentSerif-Italic"
+    case serifRegular = "DMSerifDisplay-Regular"
+    case serifItalic = "DMSerifDisplay-Italic"
     case interRegular = "Inter-Regular"
     case interSemiBold = "Inter-SemiBold"
 }
@@ -24,8 +24,8 @@ public enum OursFonts {
 
     /// Font file names as they appear in the resource bundle.
     private static let files = [
-        "InstrumentSerif-Regular",
-        "InstrumentSerif-Italic",
+        "DMSerifDisplay-Regular",
+        "DMSerifDisplay-Italic",
         "Inter-Regular",
         "Inter-SemiBold"
     ]

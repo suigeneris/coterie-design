@@ -95,10 +95,10 @@ struct TypographyTests {
 
     @Test func serifIsReservedForHeadlines() {
         for style in [OursTextStyle.display, .h1, .h2] {
-            #expect(style.fontName == .instrumentSerifRegular)
+            #expect(style.fontName == .serifRegular)
         }
         for style in [OursTextStyle.h3, .bodyLarge, .body, .bodySmall, .caption, .button] {
-            #expect(style.fontName != .instrumentSerifRegular, "\(style) should use Inter")
+            #expect(style.fontName != .serifRegular, "\(style) should use Inter")
         }
     }
 }
@@ -109,8 +109,8 @@ struct FontRegistrationTests {
     @Test func bundledFontsRegisterAndResolve() {
         OursFonts.registerIfNeeded()
         for name in [
-            OursFontName.instrumentSerifRegular,
-            .instrumentSerifItalic,
+            OursFontName.serifRegular,
+            .serifItalic,
             .interRegular,
             .interSemiBold
         ] {
@@ -122,7 +122,7 @@ struct FontRegistrationTests {
 
     /// Catches a resource being dropped from the package manifest.
     @Test func everyFontFileIsPresentInTheBundle() {
-        for name in ["InstrumentSerif-Regular", "InstrumentSerif-Italic",
+        for name in ["DMSerifDisplay-Regular", "DMSerifDisplay-Italic",
                      "Inter-Regular", "Inter-SemiBold"] {
             #expect(
                 Bundle.module.url(forResource: name, withExtension: "ttf") != nil,
