@@ -16,7 +16,7 @@ private func luminance(_ color: Color) -> Double {
     return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
 }
 
-private func contrast(_ a: Color, _ b: Color) -> Double {
+func contrast(_ a: Color, _ b: Color) -> Double {
     let (la, lb) = (luminance(a), luminance(b))
     return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 }
@@ -148,5 +148,48 @@ struct LayoutTests {
     @Test func touchTargetsMeetTheMinimum() {
         #expect(OursSize.minimumTouchTarget >= 44)
         #expect(OursSize.buttonHeight >= OursSize.minimumTouchTarget)
+    }
+}
+
+// MARK: - Buttons
+
+/// `.foregroundStyle` is silently ignored on `OursButton` because the style sets the label
+/// colour on its own content. These pin the supported override instead.
+struct ButtonColourTests {
+    @Test func eachKindHasItsOwnRestingLabelColour() {
+        #expect(OursButtonKind.primary.labelColor(pressed: false, isEnabled: true, override: nil) == .white)
+        #expect(OursButtonKind.secondary.labelColor(pressed: false, isEnabled: true, override: nil) == OursColor.forest)
+        #expect(OursButtonKind.tertiary.labelColor(pressed: false, isEnabled: true, override: nil) == OursColor.forest)
+        #expect(OursButtonKind.destructive.labelColor(pressed: false, isEnabled: true, override: nil) == OursColor.error)
+    }
+
+    @Test func destructiveInvertsWhilePressed() {
+        #expect(OursButtonKind.destructive.labelColor(pressed: true, isEnabled: true, override: nil) == .white)
+    }
+
+    @Test(arguments: [OursButtonKind.primary, .secondary, .tertiary, .destructive])
+    func overrideReplacesTheLabelColour(_ kind: OursButtonKind) {
+        #expect(kind.labelColor(pressed: false, isEnabled: true, override: OursColor.stone) == OursColor.stone)
+    }
+
+    /// A caller tinting a label must not be able to make an unusable control look usable.
+    @Test(arguments: [OursButtonKind.primary, .secondary, .tertiary, .destructive])
+    func disabledIgnoresTheOverride(_ kind: OursButtonKind) {
+        #expect(kind.labelColor(pressed: false, isEnabled: false, override: OursColor.forest) == OursColor.stone)
+    }
+
+    @Test func onlyTertiaryIsNotFullWidth() {
+        #expect(OursButtonKind.tertiary.isFullWidth == false)
+        for kind in [OursButtonKind.primary, .secondary, .destructive] {
+            #expect(kind.isFullWidth)
+        }
+    }
+
+    @Test func filledKindsMeetContrastWithTheirLabel() {
+        for kind in [OursButtonKind.primary, .destructive] {
+            let label = kind.labelColor(pressed: false, isEnabled: true, override: nil)
+            let fill = kind.backgroundColor(pressed: false, isEnabled: true)
+            #expect(contrast(label, fill) >= 4.5, "\(kind) label on its own fill")
+        }
     }
 }
