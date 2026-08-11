@@ -3,32 +3,34 @@
 Swift package implementing the **Ours** design language — tokens, fonts and base components
 for the Coterie iOS app.
 
-Part of a four-repo project:
+Part of a four-repo project, cloned side by side into a plain `coterie/` folder:
 
-| Repo | Contents |
-|---|---|
-| [`coterie-design`](https://github.com/suigeneris/coterie-design) | this repo — the design system as a Swift package |
-| [`coterie-ios`](https://github.com/suigeneris/coterie-ios) | SwiftUI app |
-| [`coterie-backend`](https://github.com/suigeneris/coterie-backend) | Supabase schema, migrations, RLS, pgTAP |
-| [`coterie-docs`](https://github.com/suigeneris/coterie-docs) | spec, plans, and the design system **source of truth** |
+| Repo | Local | Contents |
+|---|---|---|
+| [`coterie-design`](https://github.com/suigeneris/coterie-design) | `coterie/design` | this repo — the design system as a Swift package |
+| [`coterie-ios`](https://github.com/suigeneris/coterie-ios) | `coterie/ios` | SwiftUI app |
+| [`coterie-backend`](https://github.com/suigeneris/coterie-backend) | `coterie/backend` | Supabase schema, migrations, RLS, pgTAP |
+| [`coterie-docs`](https://github.com/suigeneris/coterie-docs) | `coterie/docs` | spec, plans, and the design system **source of truth** |
 
 The written system and its 14 plates live in `coterie-docs/design/`. This package is the
 Swift translation of it. **When they disagree, the docs win** — change them first, then this.
 
 ## Install
 
-```swift
-.package(url: "https://github.com/suigeneris/coterie-design.git", from: "0.1.0")
-```
-
-Or in `project.yml` for an XcodeGen project:
-
 ```yaml
 packages:
   OursDesignSystem:
-    url: https://github.com/suigeneris/coterie-design
-    from: "0.1.0"
+    url: git@github-personal:suigeneris/coterie-design.git
+    branch: main
 ```
+
+The SSH alias is deliberate. SPM fetches over HTTPS, and on a machine signed in to more than
+one GitHub account the credential helper can resolve to the wrong identity — a private repo
+then returns a misleading `Repository not found`. See `coterie-docs/README.md`.
+
+**After pushing to this repo, consuming apps need `make refresh-design`.** SPM pins to a
+commit and caches the clone, so a plain rebuild silently uses the old version and fails with
+"no member" errors that look like your code is wrong.
 
 ## Use
 
