@@ -60,6 +60,8 @@ struct ContrastTests {
         for (name, fill) in [("lavender", OursColor.lavender),
                              ("lavenderDeep", OursColor.lavenderDeep),
                              ("periwinkle", OursColor.periwinkle),
+                             ("sage", OursColor.sage),
+                             ("peach", OursColor.peach),
                              ("yellow", OursColor.yellow)] {
             #expect(contrast(OursColor.ink, fill) >= 4.5, "ink on \(name)")
             #expect(contrast(OursColor.forest, fill) >= 4.5, "forest on \(name)")
@@ -73,6 +75,8 @@ struct ContrastTests {
         #expect(contrast(OursColor.lavender, .white) < 3.0)
         #expect(contrast(OursColor.periwinkle, .white) < 3.0)
         #expect(contrast(OursColor.lavenderDeep, .white) < 3.0)
+        #expect(contrast(OursColor.sage, .white) < 3.0)
+        #expect(contrast(OursColor.peach, .white) < 3.0)
     }
 }
 

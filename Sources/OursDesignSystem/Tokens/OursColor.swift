@@ -25,6 +25,12 @@ public enum OursColor {
     /// state from `lavender`, which it is too close to in value.
     public static let periwinkle = Color(ours: 0xC9D3F3)
 
+    /// Pale sage. A decorative backing surface, paired with `peach`. Fill only.
+    /// A one-off rather than part of a scale — there is no other green tint in the system.
+    public static let sage = Color(ours: 0xE1EAE1)
+    /// Warm peach. A decorative backing surface, paired with `sage`. Fill only.
+    public static let peach = Color(ours: 0xF9EBDB)
+
     // MARK: Neutrals
 
     /// Primary text.
