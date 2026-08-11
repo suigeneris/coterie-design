@@ -52,6 +52,9 @@ public enum OursSize {
     public static let buttonHeight: CGFloat = 56
     /// 44pt — minimum interactive target in both dimensions.
     public static let minimumTouchTarget: CGFloat = 44
+    /// 56pt — standard height for a single-line text field, matching `buttonHeight` so
+    /// fields and the primary action below them share one rhythm.
+    public static let fieldHeight: CGFloat = 56
     /// 24pt — horizontal padding inside a button.
     public static let buttonHorizontalPadding: CGFloat = 24
 }

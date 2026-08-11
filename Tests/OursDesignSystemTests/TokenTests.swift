@@ -200,3 +200,35 @@ struct ButtonColourTests {
         }
     }
 }
+
+// MARK: - Text fields
+
+struct TextFieldBorderTests {
+    @Test func restingFieldsUseTheHairlineBorder() {
+        #expect(OursTextFieldBorder.color(isFocused: false, hasError: false, isEnabled: true) == OursColor.mist)
+        #expect(OursTextFieldBorder.width(isFocused: false, hasError: false) == 1)
+    }
+
+    @Test func focusIsVisible() {
+        #expect(OursTextFieldBorder.color(isFocused: true, hasError: false, isEnabled: true) == OursColor.focus)
+        #expect(OursTextFieldBorder.width(isFocused: true, hasError: false) == 2)
+    }
+
+    /// A field the user is fixing must keep showing what is wrong while they type in it.
+    @Test func errorOutranksFocus() {
+        #expect(OursTextFieldBorder.color(isFocused: true, hasError: true, isEnabled: true) == OursColor.error)
+    }
+
+    /// A disabled field never draws attention, even if focus state is stale.
+    @Test func disabledStaysNeutral() {
+        #expect(OursTextFieldBorder.color(isFocused: true, hasError: false, isEnabled: false) == OursColor.mist)
+    }
+
+    /// The reason `focus` exists rather than reusing `lavender`: a border is UI, so it owes
+    /// 3:1 against the field it outlines.
+    @Test func focusBorderMeetsUIContrast() {
+        let ratio = contrast(OursColor.focus, OursColor.surfaceBase)
+        #expect(ratio >= 3.0, "focus on surfaceBase is \(String(format: "%.2f", ratio)):1")
+        #expect(contrast(OursColor.lavender, OursColor.surfaceBase) < 3.0, "lavender would not have")
+    }
+}
