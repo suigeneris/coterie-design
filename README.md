@@ -70,7 +70,7 @@ system and becomes a second app target.
 
 ## Fonts
 
-Instrument Serif and Inter, both open-source (SIL OFL, licences included alongside them).
+DM Serif Display and Inter, both open-source (SIL OFL, licences included alongside them).
 
 Fonts inside a Swift package **cannot** be declared in the host app's `UIAppFonts` — that key
 only sees the app bundle. They're registered at runtime from `Bundle.module` via Core Text,
