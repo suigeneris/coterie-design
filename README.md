@@ -61,6 +61,20 @@ VStack(spacing: OursSpacing.md) {
 | `OursMotion` | Durations, animations, and Reduce Motion handling |
 | `OursButton` · `OursBadge` | Base components |
 
+### Setting a button's label colour
+
+`.foregroundStyle` **does not work** on `OursButton` — the button's `ButtonStyle` sets the
+label colour on its own content, and a modifier applied closer to the content always wins, so
+an outer `.foregroundStyle` is silently ignored. Use:
+
+```swift
+OursButton("Skip", kind: .tertiary) { … }
+    .oursButtonLabelColor(OursColor.ink)
+```
+
+Disabled buttons ignore the override, so a caller cannot tint an unusable control into
+looking usable.
+
 ## What's deliberately not in it
 
 **Anything that knows about the product.** No `Pool`, no `Profile`, no domain models. Product
