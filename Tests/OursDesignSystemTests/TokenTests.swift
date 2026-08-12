@@ -259,3 +259,35 @@ struct TextFieldBorderTests {
         }
     }
 }
+
+// MARK: - Feedback
+
+/// §14: "never rely on colour alone to convey meaning" — and the colour has to be readable
+/// on the surface it sits on.
+struct MessageBannerTests {
+    @Test(arguments: OursMessageTone.allCases)
+    func everyToneCarriesAnIconAndAWordAsWellAsAColour(_ tone: OursMessageTone) {
+        #expect(!tone.symbol.isEmpty)
+        #expect(!tone.accessibilityPrefix.isEmpty)
+    }
+
+    @Test(arguments: OursMessageTone.allCases)
+    func everyToneIsLegibleOnItsOwnSurface(_ tone: OursMessageTone) {
+        let ratio = contrast(tone.foreground, tone.background)
+        #expect(ratio >= 4.5, "\(tone) is \(String(format: "%.2f", ratio)):1 on its own fill")
+    }
+
+    /// The banner sits on the app background as often as on a card, so it must survive both.
+    @Test(arguments: OursMessageTone.allCases)
+    func everyToneIsLegibleOnTheAppBackground(_ tone: OursMessageTone) {
+        #expect(contrast(tone.foreground, OursColor.backgroundPrimary) >= 4.5)
+    }
+
+    /// Two tones that look alike defeat the point of having tones.
+    @Test func tonesAreVisuallyDistinct() {
+        let foregrounds = OursMessageTone.allCases.map(\.foreground)
+        #expect(Set(foregrounds).count == OursMessageTone.allCases.count)
+        let symbols = OursMessageTone.allCases.map(\.symbol)
+        #expect(Set(symbols).count == OursMessageTone.allCases.count)
+    }
+}
