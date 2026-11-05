@@ -13,6 +13,8 @@ public enum OursBadgeTone: Sendable {
     case success
     /// Inactive or past state, e.g. `Sold out`, `Archived`.
     case neutral
+    /// Failed state, e.g. `Verification failed`.
+    case error
 
     var background: Color {
         switch self {
@@ -20,13 +22,14 @@ public enum OursBadgeTone: Sendable {
         case .feature: OursColor.lavender
         case .success: OursColor.forest
         case .neutral: OursColor.mist
+        case .error: OursColor.error
         }
     }
 
     var foreground: Color {
         switch self {
         case .attention, .feature: OursColor.ink
-        case .success: .white
+        case .success, .error: .white
         case .neutral: OursColor.slate
         }
     }

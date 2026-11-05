@@ -56,6 +56,11 @@ struct ContrastTests {
         }
     }
 
+    @Test func errorBadgeIsWhiteOnTheErrorFill() {
+        #expect(OursBadgeTone.error.background == OursColor.error)
+        #expect(contrast(OursBadgeTone.error.foreground, OursBadgeTone.error.background) >= 4.5)
+    }
+
     @Test func textOnBrandFillsMeetsAA() {
         for (name, fill) in [("lavender", OursColor.lavender),
                              ("lavenderDeep", OursColor.lavenderDeep),
