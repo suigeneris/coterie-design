@@ -46,6 +46,16 @@ struct AvatarGroupTests {
         #expect(OursAvatarGroup.initials(for: "   ") == "")
     }
 
+    @Test func spokenNameIsTheTrimmedName() {
+        #expect(OursAvatarGroup.spokenName(for: "Seed A") == "Seed A")
+        #expect(OursAvatarGroup.spokenName(for: "  Ann Lee ") == "Ann Lee")
+    }
+
+    @Test func blankNamesAreSpokenAsPerson() {
+        #expect(OursAvatarGroup.spokenName(for: "") == "Person")
+        #expect(OursAvatarGroup.spokenName(for: "   ") == "Person")
+    }
+
     @Test func aPersonCanCrossAConcurrencyBoundary() {
         func requireSendable<T: Sendable>(_: T.Type) {}
         requireSendable(OursAvatarGroup.Person.self)

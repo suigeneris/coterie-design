@@ -28,6 +28,11 @@ public struct OursAvatarGroup: View {
             .joined()
     }
 
+    nonisolated static func spokenName(for name: String) -> String {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "Person" : trimmed
+    }
+
     public var body: some View {
         HStack(spacing: OursSpacing.xs) {
             ForEach(people) { person in
@@ -59,7 +64,7 @@ private struct OursAvatar: View {
         .frame(width: Self.diameter, height: Self.diameter)
         .clipShape(Circle())
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(person.name)
+        .accessibilityLabel(OursAvatarGroup.spokenName(for: person.name))
     }
 
     @ViewBuilder
