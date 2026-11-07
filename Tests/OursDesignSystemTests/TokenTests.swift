@@ -113,6 +113,36 @@ struct ContrastTests {
     }
 }
 
+// MARK: - Lilacs
+
+/// The three lilacs differ by hue alone (1.08–1.24:1 apart), so none of them may be what
+/// tells one tone from another.
+struct LilacTests {
+    private static let lilacs = [OursColor.lavender, OursColor.lavenderDeep, OursColor.periwinkle]
+
+    @Test func badgeTonesUseAtMostOneLilac() {
+        let tones: [OursBadgeTone] = [.attention, .feature, .success, .neutral, .error]
+        let lilacFills = tones.map(\.background).filter { Self.lilacs.contains($0) }
+        #expect(lilacFills.count <= 1, "two badge tones would differ only by lilac")
+    }
+
+    @Test func messageTonesUseNoLilac() {
+        for tone in OursMessageTone.allCases {
+            #expect(!Self.lilacs.contains(tone.background), "\(tone) sits on a lilac")
+        }
+    }
+
+    /// The reason the rule exists. If a lilac is ever darkened far enough to stand apart in
+    /// lightness, this fails and the rule can be revisited.
+    @Test func lilacsAreTooCloseToSeparateByLightness() {
+        for (i, a) in Self.lilacs.enumerated() {
+            for b in Self.lilacs.dropFirst(i + 1) {
+                #expect(contrast(a, b) < 1.5)
+            }
+        }
+    }
+}
+
 // MARK: - Typography
 
 struct TypographyTests {

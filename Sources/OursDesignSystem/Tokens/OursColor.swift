@@ -20,17 +20,28 @@ public enum OursColor {
     public static let forest = Color(ours: 0x0F3D34)
     /// App background and soft warm surfaces.
     public static let cream = Color(ours: 0xF6F3EE)
-    /// Highlights, feature surfaces and moments of delight. Fill only — never text.
+    // MARK: Lilacs
+    //
+    // Three lilacs, each with one job. They sit 1.08–1.24:1 from one another and from cream,
+    // so they differ by hue alone: enough to decorate, never enough to tell two things apart.
+    // No lilac marks a state, and no two lilacs appear in the same set of tones.
+    //
+    //   lavender      a backdrop that carries content: the ownership card, the feature badge
+    //   lavenderDeep  a lilac that must be seen as a shape: on cream, or as a figure on lavender
+    //   periwinkle    only layered with lavenderDeep, as in the onboarding card stack
+    //
+    // All three are fill only. `ink`, `forest` and `slate` pass AA on every one.
+
+    /// A backdrop that carries content: the ownership card, the feature badge. Never a shape
+    /// on its own on cream, where it nearly vanishes (1.10:1). Fill only, never text.
     public static let lavender = Color(ours: 0xE9E6FF)
     /// Attention badges and small accents. Fill only — 1.34:1 against white.
     public static let yellow = Color(ours: 0xF2E074)
-    /// A deeper lilac for decorative surfaces that must read as purple against `cream`.
-    /// `lavender` is nearly white and disappears on the app background; use this where the
-    /// surface itself is the visual rather than a backdrop for content. Fill only.
+    /// A lilac that must be seen as a shape: a decorative surface on cream, or a figure on a
+    /// `lavender` backdrop like the ownership card's fraction disc. Fill only.
     public static let lavenderDeep = Color(ours: 0xE4D6F7)
-    /// Secondary feature surface, paired with `lavenderDeep` in layered compositions.
-    /// Fill only. Reinstated for the onboarding card stack; never use it to distinguish a
-    /// state from `lavender`, which it is too close to in value.
+    /// Only ever layered with `lavenderDeep`, as in the onboarding card stack. Fill only.
+    /// Never use it to tell a state apart from another lilac: 1.08:1 from `lavenderDeep`.
     public static let periwinkle = Color(ours: 0xC9D3F3)
 
     /// Pale sage. A decorative backing surface, paired with `peach`. Fill only.
