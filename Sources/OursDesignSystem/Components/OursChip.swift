@@ -51,7 +51,7 @@ public struct OursChip: View {
             .overlay {
                 if let border = Self.border(isSelected: isSelected) {
                     RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous)
-                        .strokeBorder(border, lineWidth: 1)
+                        .strokeBorder(border, lineWidth: OursStroke.hairline)
                 }
             }
             .contentShape(RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous))

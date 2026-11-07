@@ -40,7 +40,7 @@ public struct OursAvatarGroup: View {
             }
             if showsOpenPlace {
                 Image(systemName: "plus")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: OursIconSize.sm, weight: .semibold))
                     .foregroundStyle(OursColor.slate)
                     .frame(width: OursAvatar.diameter, height: OursAvatar.diameter)
                     .background(OursColor.mist, in: Circle())
@@ -52,7 +52,7 @@ public struct OursAvatarGroup: View {
 }
 
 private struct OursAvatar: View {
-    static let diameter: CGFloat = 32
+    static let diameter = OursSize.avatar
 
     let person: OursAvatarGroup.Person
 
@@ -90,7 +90,7 @@ private struct OursAvatar: View {
         let initials = OursAvatarGroup.initials(for: person.name)
         if initials.isEmpty {
             Image(systemName: "person.fill")
-                .font(.system(size: 14))
+                .font(.system(size: OursIconSize.sm))
                 .foregroundStyle(OursColor.slate)
         } else {
             Text(initials)

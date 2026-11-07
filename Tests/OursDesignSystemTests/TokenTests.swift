@@ -185,6 +185,27 @@ struct LayoutTests {
         }
     }
 
+    @Test func radiusScaleFollowsTheFourPointGrid() {
+        let scale: [CGFloat] = [
+            OursRadius.xxs, OursRadius.xs, OursRadius.sm, OursRadius.md, OursRadius.lg, OursRadius.xl
+        ]
+        #expect(scale == scale.sorted(), "radius scale is out of order")
+        for value in scale {
+            #expect(value.truncatingRemainder(dividingBy: 4) == 0, "radius \(value) is off the 4pt grid")
+        }
+    }
+
+    /// Fixed sizes used to be literals inside components. As tokens they stay on the grid.
+    @Test func fixedSizesFollowTheFourPointGrid() {
+        let sizes: [CGFloat] = [
+            OursSize.progressTrack, OursSize.overlayButton, OursSize.avatar, OursSize.iconTile,
+            OursSize.figureDisc, OursSize.statusDisc, OursSize.thumbnail, OursSize.photoTile
+        ]
+        for value in sizes {
+            #expect(value.truncatingRemainder(dividingBy: 4) == 0, "size \(value) is off the 4pt grid")
+        }
+    }
+
     @Test func touchTargetsMeetTheMinimum() {
         #expect(OursSize.minimumTouchTarget >= 44)
         #expect(OursSize.buttonHeight >= OursSize.minimumTouchTarget)

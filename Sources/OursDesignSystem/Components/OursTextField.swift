@@ -48,7 +48,7 @@ public enum OursTextFieldBorder {
     }
 
     public static func width(state: OursFieldState, isFocused: Bool) -> CGFloat {
-        state == .neutral && !isFocused ? 1 : 2
+        state == .neutral && !isFocused ? OursStroke.hairline : OursStroke.strong
     }
 }
 

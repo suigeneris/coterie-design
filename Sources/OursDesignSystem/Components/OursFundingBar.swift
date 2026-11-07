@@ -31,14 +31,14 @@ public struct OursFundingBar: View {
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: OursRadius.xxs, style: .continuous)
                         .fill(OursColor.mist)
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: OursRadius.xxs, style: .continuous)
                         .fill(OursColor.forest)
                         .frame(width: proxy.size.width * fraction)
                 }
             }
-            .frame(height: 8)
+            .frame(height: OursSize.progressTrack)
             .animation(
                 OursMotion.respectingReduceMotion(
                     .linear(duration: OursMotion.standard),

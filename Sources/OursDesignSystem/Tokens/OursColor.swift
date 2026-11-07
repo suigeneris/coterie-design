@@ -93,8 +93,9 @@ public enum OursColor {
 
     /// Pale fill behind a destructive button in its resting state.
     public static let errorSurface = Color(ours: 0xFBEBEB)
-    /// Disabled control fill.
-    public static let disabled = Color(ours: 0xE5E5E7)
+    /// Disabled control fill. Deliberately the same value as `mist`: a disabled control
+    /// recedes into the hairlines. Its `stone` label measures 4.05:1 on this fill.
+    public static let disabled = mist
 }
 
 extension Color {

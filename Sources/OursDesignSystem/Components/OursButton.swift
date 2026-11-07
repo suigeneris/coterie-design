@@ -162,7 +162,7 @@ private struct OursButtonBody: View {
                 RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
                     .strokeBorder(
                         isEnabled ? OursColor.forest : OursColor.stone,
-                        lineWidth: configuration.isPressed ? 2 : 1
+                        lineWidth: configuration.isPressed ? OursStroke.strong : OursStroke.hairline
                     )
             }
         }

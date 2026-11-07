@@ -34,6 +34,8 @@ public enum OursScreenMargin {
 /// Corner radius scale. Use `md` for the majority of surfaces; larger radii are reserved for
 /// elevated or expressive moments.
 public enum OursRadius {
+    /// 4pt — progress tracks and other thin bars, where 8pt would round them into pills.
+    public static let xxs: CGFloat = 4
     /// 8pt — small elements, inputs, chips.
     public static let xs: CGFloat = 8
     /// 12pt — buttons, small cards, alerts.
@@ -57,4 +59,47 @@ public enum OursSize {
     public static let fieldHeight: CGFloat = 56
     /// 24pt — horizontal padding inside a button.
     public static let buttonHorizontalPadding: CGFloat = 24
+
+    /// 8pt — height of a progress track (funding bar, step segments).
+    public static let progressTrack: CGFloat = 8
+    /// 28pt — a small circular button laid over content, e.g. removing a photo. Sits inside a
+    /// `minimumTouchTarget` hit area.
+    public static let overlayButton: CGFloat = 28
+    /// 32pt — an avatar.
+    public static let avatar: CGFloat = 32
+    /// 48pt — a tile holding an icon beside text, as on the information card.
+    public static let iconTile: CGFloat = 48
+    /// 64pt — a disc holding a short figure such as a fraction, as on the ownership card.
+    public static let figureDisc: CGFloat = 64
+    /// 72pt — the disc holding a status icon on a full-screen state, e.g. the error screen.
+    public static let statusDisc: CGFloat = 72
+    /// 112pt — media thumbnail on a product card.
+    public static let thumbnail: CGFloat = 112
+    /// 160pt — default side of a photo tile.
+    public static let photoTile: CGFloat = 160
+}
+
+/// Point sizes for SF Symbols that stand on their own rather than scaling with text.
+/// A symbol next to text uses `imageScale` instead, so it follows Dynamic Type.
+public enum OursIconSize {
+    /// 12pt — a glyph inside an `overlayButton`.
+    public static let xs: CGFloat = 12
+    /// 14pt — chevrons, avatar placeholders and the open-place plus.
+    public static let sm: CGFloat = 14
+    /// 22pt — an icon in an `iconTile`, or the plus on an empty photo tile.
+    public static let md: CGFloat = 22
+    /// 28pt — the icon in a `statusDisc`.
+    public static let lg: CGFloat = 28
+}
+
+/// Stroke widths.
+public enum OursStroke {
+    /// 1pt — resting borders, hairlines and card edges.
+    public static let hairline: CGFloat = 1
+    /// 1.5pt — dashed outlines (an empty drop target) and the ring on an `overlayButton`.
+    public static let medium: CGFloat = 1.5
+    /// 2pt — a border that signals state: focus, error, success, a pressed secondary button.
+    public static let strong: CGFloat = 2
+    /// The dash of a dashed outline: 6pt on, 4pt off.
+    public static let dash: [CGFloat] = [6, 4]
 }

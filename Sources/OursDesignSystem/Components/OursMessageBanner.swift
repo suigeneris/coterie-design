@@ -89,7 +89,7 @@ public struct OursMessageBanner: View {
         .clipShape(RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
-                .strokeBorder(tone.border, lineWidth: 1)
+                .strokeBorder(tone.border, lineWidth: OursStroke.hairline)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(tone.accessibilityPrefix). \(message)")

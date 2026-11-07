@@ -53,7 +53,7 @@ public extension View {
             .overlay {
                 if level.hasBorder {
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .strokeBorder(OursColor.mist, lineWidth: 1)
+                        .strokeBorder(OursColor.mist, lineWidth: OursStroke.hairline)
                 }
             }
             .shadow(

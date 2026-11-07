@@ -24,7 +24,7 @@ public struct OursProductCard<Media: View, Footer: View>: View {
     public var body: some View {
         HStack(alignment: .top, spacing: OursSpacing.md) {
             media
-                .frame(width: 112, height: 112)
+                .frame(width: OursSize.thumbnail, height: OursSize.thumbnail)
                 .clipShape(RoundedRectangle(cornerRadius: OursRadius.sm, style: .continuous))
 
             VStack(alignment: .leading, spacing: OursSpacing.xs) {
@@ -84,7 +84,7 @@ public struct OursOwnershipCard<Status: View>: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
-                .frame(width: 64, height: 64)
+                .frame(width: OursSize.figureDisc, height: OursSize.figureDisc)
                 .background(OursColor.lavenderDeep, in: Circle())
 
             VStack(alignment: .leading, spacing: OursSpacing.xxs) {
@@ -100,7 +100,7 @@ public struct OursOwnershipCard<Status: View>: View {
 
             if showsChevron {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: OursIconSize.sm, weight: .semibold))
                     .foregroundStyle(OursColor.slate)
                     .accessibilityHidden(true)
             }
@@ -125,9 +125,9 @@ public struct OursInformationCard: View {
     public var body: some View {
         HStack(spacing: OursSpacing.md) {
             Image(systemName: systemImage)
-                .font(.system(size: 22))
+                .font(.system(size: OursIconSize.md))
                 .foregroundStyle(OursColor.slate)
-                .frame(width: 48, height: 48)
+                .frame(width: OursSize.iconTile, height: OursSize.iconTile)
                 .background(OursColor.sage, in: RoundedRectangle(cornerRadius: OursRadius.sm, style: .continuous))
                 .accessibilityHidden(true)
 
