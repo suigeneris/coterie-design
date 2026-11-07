@@ -276,6 +276,18 @@ struct ButtonColourTests {
         }
     }
 
+    /// Disabled controls are exempt from WCAG 1.4.3, and reaching 4.5:1 would make a disabled
+    /// button look more usable. The label is held to the large-text floor instead, so it stays
+    /// legible: `stone` on `disabled` is 4.05:1. A tweak that lightens `stone` or darkens
+    /// `disabled` past 3:1 fails here.
+    @Test(arguments: [OursButtonKind.primary, .destructive])
+    func disabledLabelStaysLegibleOnItsFill(_ kind: OursButtonKind) {
+        let label = kind.labelColor(pressed: false, isEnabled: false, override: nil)
+        let fill = kind.backgroundColor(pressed: false, isEnabled: false)
+        let ratio = contrast(label, fill)
+        #expect(ratio >= 3.0, "disabled \(kind) label is \(String(format: "%.2f", ratio)):1")
+    }
+
     @Test func filledKindsMeetContrastWithTheirLabel() {
         for kind in [OursButtonKind.primary, .destructive] {
             let label = kind.labelColor(pressed: false, isEnabled: true, override: nil)

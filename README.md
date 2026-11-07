@@ -57,6 +57,7 @@ VStack(spacing: OursSpacing.md) {
 | `OursColor` | Brand, neutral, surface and semantic colours |
 | `OursTextStyle` | The 9-step type scale, Dynamic Type aware, with specified line heights |
 | `OursSpacing` · `OursRadius` · `OursSize` · `OursScreenMargin` | 4pt grid, radius scale, fixed sizes |
+| `OursIconSize` · `OursStroke` | Free-standing symbol sizes; stroke widths and the dash pattern |
 | `OursElevation` | Three levels, with the shadow and border each specifies |
 | `OursMotion` | Durations, animations, and Reduce Motion handling |
 | `OursButton` · `OursBadge` | Base components |
