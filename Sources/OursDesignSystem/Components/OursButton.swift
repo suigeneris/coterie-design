@@ -28,7 +28,11 @@ extension OursButtonKind {
         if let override { return override }
         switch self {
         case .primary: return .white
-        case .secondary, .tertiary: return OursColor.forest
+        // A pressed secondary shows it through its thickening outline. A tertiary has no
+        // container, so its label is the only thing that can respond: it darkens, as the
+        // primary's fill does, rather than relying on the 0.98 scale alone.
+        case .secondary: return OursColor.forest
+        case .tertiary: return pressed ? OursColor.ink : OursColor.forest
         case .destructive: return pressed ? .white : OursColor.error
         }
     }
@@ -79,10 +83,15 @@ public extension View {
 
 /// A button in the Ours style: 56pt tall, 16pt radius, Inter Semibold 16pt, with default,
 /// pressed, disabled and loading states.
+///
+/// `showsChevron` adds a trailing chevron. Use it only when the button navigates somewhere,
+/// typically a tertiary "View all"; on an action such as "Skip" it would promise a
+/// destination that does not exist.
 public struct OursButton: View {
     private let title: String
     private let kind: OursButtonKind
     private let systemImage: String?
+    private let showsChevron: Bool
     private let isLoading: Bool
     private let action: () -> Void
 
@@ -90,12 +99,14 @@ public struct OursButton: View {
         _ title: String,
         kind: OursButtonKind = .primary,
         systemImage: String? = nil,
+        showsChevron: Bool = false,
         isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.kind = kind
         self.systemImage = systemImage
+        self.showsChevron = showsChevron
         self.isLoading = isLoading
         self.action = action
     }
@@ -110,6 +121,12 @@ public struct OursButton: View {
                         .accessibilityHidden(true)
                 }
                 Text(title)
+                if showsChevron {
+                    // Decorative: the label already says where the button goes.
+                    Image(systemName: "chevron.right")
+                        .imageScale(.small)
+                        .accessibilityHidden(true)
+                }
             }
         }
         .buttonStyle(OursButtonStyle(kind: kind, isLoading: isLoading))

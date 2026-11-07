@@ -82,17 +82,10 @@ looking usable.
 
 ### Appearance
 
-Ours is light-only until the docs define a dark palette. Put `.oursAppearance()` once on the
-app's root view: it pins the light colour scheme so system sheets, controls and materials don't
-turn dark around tokens that don't.
-
-```swift
-WindowGroup { RootView().oursAppearance() }
-```
-
-Tokens are built to adapt. A token gets a dark value by changing `Color(ours: hex)` to
-`Color(ours: light, dark: dark)`, and the contrast tests already run in both appearances, so a
-dark value has to pass AA before it can ship.
+Ours is light-only for now. The app locks itself to light with `UIUserInterfaceStyle: Light` in
+its Info.plist. Tokens are still built to adapt: a token gets a dark value by changing
+`Color(ours: hex)` to `Color(ours: light, dark: dark)`, and the contrast tests already run in
+both appearances, so a dark value has to pass AA before it can ship.
 
 ## What's deliberately not in it
 

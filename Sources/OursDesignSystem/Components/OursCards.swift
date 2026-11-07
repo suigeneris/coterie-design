@@ -55,6 +55,16 @@ public struct OursProductCard<Media: View, Footer: View>: View {
     }
 }
 
+/// The ownership card's fraction disc. Outside the generic card so it can be tested.
+///
+/// `forest` with a white figure: the fraction is what the card is about, and the brand colour
+/// makes it the first thing read. The disc was `lavenderDeep` on the `lavender` card, 1.13:1,
+/// so its edge was all but invisible and the figure floated.
+enum OursOwnershipDisc {
+    static let fill = OursColor.forest
+    static let label = Color.white
+}
+
 public struct OursOwnershipCard<Status: View>: View {
     private let fraction: String
     private let title: String
@@ -80,12 +90,12 @@ public struct OursOwnershipCard<Status: View>: View {
         HStack(spacing: OursSpacing.md) {
             Text(fraction)
                 .oursTextStyle(.h3)
-                .foregroundStyle(OursColor.ink)
+                .foregroundStyle(OursOwnershipDisc.label)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 .frame(width: OursSize.figureDisc, height: OursSize.figureDisc)
-                .background(OursColor.lavenderDeep, in: Circle())
+                .background(OursOwnershipDisc.fill, in: Circle())
 
             VStack(alignment: .leading, spacing: OursSpacing.xxs) {
                 Text(title)

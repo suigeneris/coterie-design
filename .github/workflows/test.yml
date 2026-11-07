@@ -1,0 +1,64 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: xcodebuild test (iOS Simulator)
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      # The package targets iOS 18, so it needs an iOS 18+ simulator. The runner image's device
+      # names change with each Xcode release, so pick an available iPhone on the newest runtime
+      # instead of naming one. The script sits inside a single-quoted bash string: it must not
+      # contain a single quote.
+      - name: Pick a simulator
+        id: sim
+        run: |
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          data = json.load(sys.stdin)["devices"]
+          def version(runtime):
+              tail = runtime.rsplit("iOS-", 1)[-1]
+              return tuple(int(p) for p in tail.split("-") if p.isdigit())
+          runtimes = sorted((r for r in data if ".iOS-" in r and version(r) >= (18,)), key=version, reverse=True)
+          for runtime in runtimes:
+              phones = [d for d in data[runtime] if d["name"].startswith("iPhone")]
+              if phones:
+                  print(phones[0]["udid"], file=sys.stdout)
+                  print(phones[0]["name"] + " on " + runtime, file=sys.stderr)
+                  break
+          ')
+          if [ -z "$udid" ]; then
+            echo "::error::No iPhone simulator with iOS 18 or later on this runner"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: Test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -scheme OursDesignSystem \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO

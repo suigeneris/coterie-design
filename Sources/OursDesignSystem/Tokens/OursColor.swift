@@ -7,11 +7,12 @@ import UIKit
 /// meet the WCAG AA commitment the system makes. See `docs/design/ours-design-system.md` §01.
 ///
 /// ## Appearance
-/// Ours is light-only for now: the plates define no dark palette, and the app is pinned to
-/// light with `.oursAppearance()`. Every token is still built so it *can* adapt. To give one
-/// a dark value, write `Color(ours: light, dark: dark)` instead of `Color(ours: hex)`. The
-/// contrast tests resolve every token in both appearances, so a dark value has to pass AA
-/// before it ships. Once every token has one, remove the pin in `oursAppearance()`.
+/// Ours is light-only for now (docs, open question 3): no dark palette is defined, and the app
+/// locks itself to light with `UIUserInterfaceStyle: Light` in its Info.plist. Every token is
+/// still built so it *can* adapt. To give one a dark value, write `Color(ours: light, dark:)`
+/// instead of `Color(ours: hex)`. The contrast tests resolve every token in both appearances,
+/// so a dark value has to pass AA before it ships. Lift the Info.plist lock only once every
+/// token has one.
 public enum OursColor {
 
     // MARK: Brand
@@ -27,7 +28,7 @@ public enum OursColor {
     // No lilac marks a state, and no two lilacs appear in the same set of tones.
     //
     //   lavender      a backdrop that carries content: the ownership card, the feature badge
-    //   lavenderDeep  a lilac that must be seen as a shape: on cream, or as a figure on lavender
+    //   lavenderDeep  a lilac that must be seen as a shape on cream: the onboarding card stack
     //   periwinkle    only layered with lavenderDeep, as in the onboarding card stack
     //
     // All three are fill only. `ink`, `forest` and `slate` pass AA on every one.
@@ -37,8 +38,8 @@ public enum OursColor {
     public static let lavender = Color(ours: 0xE9E6FF)
     /// Attention badges and small accents. Fill only — 1.34:1 against white.
     public static let yellow = Color(ours: 0xF2E074)
-    /// A lilac that must be seen as a shape: a decorative surface on cream, or a figure on a
-    /// `lavender` backdrop like the ownership card's fraction disc. Fill only.
+    /// A lilac that must be seen as a shape on cream (1.24:1), as in the onboarding card stack.
+    /// Not a figure on `lavender`: at 1.13:1 a shape there reads by hue alone. Fill only.
     public static let lavenderDeep = Color(ours: 0xE4D6F7)
     /// Only ever layered with `lavenderDeep`, as in the onboarding card stack. Fill only.
     /// Never use it to tell a state apart from another lilac: 1.08:1 from `lavenderDeep`.
@@ -74,10 +75,11 @@ public enum OursColor {
     /// Border of a focused input, and the text caret.
     ///
     /// §11 asks for "a lavender border" when focused, but the palette's lavenders are all
-    /// pale backing tints that measure about 1.2:1 on a white field. This keeps the violet
-    /// hue at 4.65:1, darkened from `#9D87DC` (3.03:1) once resting fields took the
-    /// 3.63:1 `outline`: focus must read as the stronger state, not the lighter one.
-    public static let focus = Color(ours: 0x7E61D1)
+    /// pale backing tints that measure about 1.2:1 on a white field. This is the documented
+    /// `focus`, the same hue taken down to 4.39:1 on white. The package had drifted to
+    /// `#9D87DC` (3.03:1). It must stay heavier than the 3.63:1 `outline`, so that focusing a
+    /// field reads as the stronger state; a test holds that.
+    public static let focus = Color(ours: 0x8F64C3)
 
     // MARK: Surfaces
 
@@ -96,9 +98,11 @@ public enum OursColor {
     public static let warning = Color(ours: 0x8A6410)
     /// Errors and destructive actions.
     public static let error = Color(ours: 0xC62828)
-    /// Neutral informational messages. Darkened from the plate's `#557C8A`, which measured
-    /// 4.09:1 on cream. At 4.51:1 this is the minimum passing value and has no headroom.
-    public static let info = Color(ours: 0x507582)
+    /// Neutral informational messages. Darkened along its own hue from the plate's `#557C8A`
+    /// (4.09:1 on cream), first to the bare minimum `#507582` (4.51:1), then to this: 5.12:1
+    /// on cream, 5.66:1 on white. It carries text and a banner edge on both grounds, so it
+    /// needs headroom rather than sitting on the line.
+    public static let info = Color(ours: 0x4A6C78)
 
     // MARK: Fills
 
@@ -137,17 +141,5 @@ extension UIColor {
             blue: CGFloat(hex & 0xFF) / 255,
             alpha: 1
         )
-    }
-}
-
-public extension View {
-    /// Applies the appearance Ours supports. Put it once, on the app's root view.
-    ///
-    /// Ours has no dark palette yet, so this pins the light colour scheme: without it, system
-    /// controls, sheets and materials turn dark around tokens that do not, and text in a
-    /// system component can land on the wrong ground. When every token has a dark value,
-    /// this becomes a no-op and the system follows the device.
-    func oursAppearance() -> some View {
-        preferredColorScheme(.light)
     }
 }

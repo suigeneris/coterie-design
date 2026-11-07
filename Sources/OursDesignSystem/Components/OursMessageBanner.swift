@@ -63,6 +63,9 @@ public enum OursMessageTone: Sendable, CaseIterable {
 
 /// A contextual message sitting next to the thing it describes.
 ///
+/// `radiusSm`, as §04 assigns alerts: a one-line banner is about 42pt tall, and `radiusMd`
+/// would round it towards a pill.
+///
 /// Use for anything that explains a result without demanding a decision. Reach for a dialog
 /// only when the user genuinely cannot continue without answering.
 public struct OursMessageBanner: View {
@@ -86,9 +89,9 @@ public struct OursMessageBanner: View {
         }
         .padding(OursSpacing.sm)
         .background(tone.background)
-        .clipShape(RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: OursRadius.sm, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: OursRadius.sm, style: .continuous)
                 .strokeBorder(tone.border, lineWidth: OursStroke.hairline)
         }
         .accessibilityElement(children: .combine)
