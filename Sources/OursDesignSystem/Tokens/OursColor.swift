@@ -74,10 +74,11 @@ public enum OursColor {
     /// Border of a focused input, and the text caret.
     ///
     /// §11 asks for "a lavender border" when focused, but the palette's lavenders are all
-    /// pale backing tints that measure about 1.2:1 on a white field. This keeps the violet
-    /// hue at 4.65:1, darkened from `#9D87DC` (3.03:1) once resting fields took the
-    /// 3.63:1 `outline`: focus must read as the stronger state, not the lighter one.
-    public static let focus = Color(ours: 0x7E61D1)
+    /// pale backing tints that measure about 1.2:1 on a white field. This is the documented
+    /// `focus`, the same hue taken down to 4.39:1 on white. The package had drifted to
+    /// `#9D87DC` (3.03:1). It must stay heavier than the 3.63:1 `outline`, so that focusing a
+    /// field reads as the stronger state; a test holds that.
+    public static let focus = Color(ours: 0x8F64C3)
 
     // MARK: Surfaces
 
