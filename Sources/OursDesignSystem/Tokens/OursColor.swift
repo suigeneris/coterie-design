@@ -7,11 +7,12 @@ import UIKit
 /// meet the WCAG AA commitment the system makes. See `docs/design/ours-design-system.md` §01.
 ///
 /// ## Appearance
-/// Ours is light-only for now: the plates define no dark palette, and the app is pinned to
-/// light with `.oursAppearance()`. Every token is still built so it *can* adapt. To give one
-/// a dark value, write `Color(ours: light, dark: dark)` instead of `Color(ours: hex)`. The
-/// contrast tests resolve every token in both appearances, so a dark value has to pass AA
-/// before it ships. Once every token has one, remove the pin in `oursAppearance()`.
+/// Ours is light-only for now (docs, open question 3): no dark palette is defined, and the app
+/// locks itself to light with `UIUserInterfaceStyle: Light` in its Info.plist. Every token is
+/// still built so it *can* adapt. To give one a dark value, write `Color(ours: light, dark:)`
+/// instead of `Color(ours: hex)`. The contrast tests resolve every token in both appearances,
+/// so a dark value has to pass AA before it ships. Lift the Info.plist lock only once every
+/// token has one.
 public enum OursColor {
 
     // MARK: Brand
@@ -140,17 +141,5 @@ extension UIColor {
             blue: CGFloat(hex & 0xFF) / 255,
             alpha: 1
         )
-    }
-}
-
-public extension View {
-    /// Applies the appearance Ours supports. Put it once, on the app's root view.
-    ///
-    /// Ours has no dark palette yet, so this pins the light colour scheme: without it, system
-    /// controls, sheets and materials turn dark around tokens that do not, and text in a
-    /// system component can land on the wrong ground. When every token has a dark value,
-    /// this becomes a no-op and the system follows the device.
-    func oursAppearance() -> some View {
-        preferredColorScheme(.light)
     }
 }
