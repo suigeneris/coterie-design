@@ -34,6 +34,12 @@ public enum OursMessageTone: Sendable, CaseIterable {
         }
     }
 
+    /// The banner's edge. Every ground above is within 1.11:1 of cream (`errorSurface` 1.04,
+    /// `peach` 1.06, white 1.11), so on the app background a borderless banner is loose text.
+    /// The tone's own colour already clears 4.5:1 on cream and on its fill, so the edge is
+    /// always visible and repeats the tone rather than adding a fifth colour.
+    var border: Color { foreground }
+
     var symbol: String {
         switch self {
         case .error: "exclamationmark.circle.fill"
@@ -81,6 +87,10 @@ public struct OursMessageBanner: View {
         .padding(OursSpacing.sm)
         .background(tone.background)
         .clipShape(RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
+                .strokeBorder(tone.border, lineWidth: 1)
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(tone.accessibilityPrefix). \(message)")
     }

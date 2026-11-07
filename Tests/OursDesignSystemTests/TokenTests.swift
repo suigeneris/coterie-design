@@ -308,6 +308,14 @@ struct MessageBannerTests {
         #expect(contrast(tone.foreground, OursColor.backgroundPrimary) >= 4.5)
     }
 
+    /// Every banner ground is within 1.11:1 of cream, so without an edge a banner on the app
+    /// background reads as loose text. The border has to clear 3:1 against both sides of it.
+    @Test(arguments: OursMessageTone.allCases)
+    func everyToneHasAnEdgeVisibleOnTheAppBackground(_ tone: OursMessageTone) {
+        #expect(contrast(tone.border, OursColor.backgroundPrimary) >= 3.0, "\(tone) edge on cream")
+        #expect(contrast(tone.border, tone.background) >= 3.0, "\(tone) edge on its own fill")
+    }
+
     /// Two tones that look alike defeat the point of having tones.
     @Test func tonesAreVisuallyDistinct() {
         let foregrounds = OursMessageTone.allCases.map(\.foreground)
