@@ -19,7 +19,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Show toolchain
         run: |
@@ -28,7 +28,8 @@ jobs:
 
       # The package targets iOS 18, so it needs an iOS 18+ simulator. The runner image's device
       # names change with each Xcode release, so pick an available iPhone on the newest runtime
-      # instead of naming one.
+      # instead of naming one. The script sits inside a single-quoted bash string: it must not
+      # contain a single quote.
       - name: Pick a simulator
         id: sim
         run: |
@@ -43,7 +44,7 @@ jobs:
               phones = [d for d in data[runtime] if d["name"].startswith("iPhone")]
               if phones:
                   print(phones[0]["udid"], file=sys.stdout)
-                  print(f"{phones[0]['name']} on {runtime}", file=sys.stderr)
+                  print(phones[0]["name"] + " on " + runtime, file=sys.stderr)
                   break
           ')
           if [ -z "$udid" ]; then
