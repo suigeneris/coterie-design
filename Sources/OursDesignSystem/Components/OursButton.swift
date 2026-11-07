@@ -19,6 +19,10 @@ extension OursButtonKind {
     ///
     /// A disabled button always looks disabled — an override never applies, because a caller
     /// tinting a label should not be able to make an unusable control look usable.
+    ///
+    /// The disabled label is `stone` on `disabled`, 4.05:1. Disabled controls are exempt from
+    /// WCAG 1.4.3, and 4.5:1 would read as usable; a test holds it at 3:1 or better so it
+    /// stays legible.
     func labelColor(pressed: Bool, isEnabled: Bool, override: Color?) -> Color {
         guard isEnabled else { return OursColor.stone }
         if let override { return override }
@@ -162,7 +166,7 @@ private struct OursButtonBody: View {
                 RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
                     .strokeBorder(
                         isEnabled ? OursColor.forest : OursColor.stone,
-                        lineWidth: configuration.isPressed ? 2 : 1
+                        lineWidth: configuration.isPressed ? OursStroke.strong : OursStroke.hairline
                     )
             }
         }

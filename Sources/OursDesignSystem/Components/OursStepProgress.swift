@@ -20,9 +20,9 @@ public struct OursStepProgress: View {
 
             HStack(spacing: OursSpacing.xxs) {
                 ForEach(0..<steps, id: \.self) { index in
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: OursRadius.xxs, style: .continuous)
                         .fill(index < reached ? OursColor.forest : OursColor.mist)
-                        .frame(height: 8)
+                        .frame(height: OursSize.progressTrack)
                 }
             }
         }

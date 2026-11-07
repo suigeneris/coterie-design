@@ -5,10 +5,12 @@ import UIKit
 
 // MARK: - Contrast
 
-/// Relative luminance per WCAG 2.1.
-private func luminance(_ color: Color) -> Double {
+/// Relative luminance per WCAG 2.1, with the colour resolved in the given appearance.
+private func luminance(_ color: Color, in style: UIUserInterfaceStyle) -> Double {
     var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-    UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+    UIColor(color)
+        .resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+        .getRed(&r, green: &g, blue: &b, alpha: &a)
     func channel(_ value: CGFloat) -> Double {
         let v = Double(value)
         return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
@@ -16,8 +18,12 @@ private func luminance(_ color: Color) -> Double {
     return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
 }
 
-func contrast(_ a: Color, _ b: Color) -> Double {
-    let (la, lb) = (luminance(a), luminance(b))
+/// Both appearances a token can resolve in. Today every token resolves the same in each;
+/// this is what holds a dark value to AA the day one is added.
+let appearances: [UIUserInterfaceStyle] = [.light, .dark]
+
+func contrast(_ a: Color, _ b: Color, in style: UIUserInterfaceStyle = .light) -> Double {
+    let (la, lb) = (luminance(a, in: style), luminance(b, in: style))
     return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 }
 
@@ -36,17 +42,36 @@ struct ContrastTests {
     ]
 
     @Test(arguments: bodyText)
-    func textTokensMeetAAOnBothGrounds(_ token: (name: String, color: Color)) {
-        for (groundName, ground) in [
-            ("backgroundPrimary", OursColor.backgroundPrimary),
-            ("surfaceBase", OursColor.surfaceBase)
-        ] {
-            let ratio = contrast(token.color, ground)
-            #expect(
-                ratio >= 4.5,
-                "\(token.name) on \(groundName) is \(String(format: "%.2f", ratio)):1, below AA 4.5"
-            )
+    func textTokensMeetAAOnBothGroundsInBothAppearances(_ token: (name: String, color: Color)) {
+        for style in appearances {
+            for (groundName, ground) in [
+                ("backgroundPrimary", OursColor.backgroundPrimary),
+                ("surfaceBase", OursColor.surfaceBase)
+            ] {
+                let ratio = contrast(token.color, ground, in: style)
+                #expect(
+                    ratio >= 4.5,
+                    "\(token.name) on \(groundName) (\(style == .dark ? "dark" : "light")) is \(String(format: "%.2f", ratio)):1, below AA 4.5"
+                )
+            }
         }
+    }
+
+    /// The mechanism a dark palette will use: one token, two values, picked by the trait.
+    @Test func adaptiveTokensResolvePerAppearance() {
+        let token = Color(ours: 0x111111, dark: 0xF6F3EE)
+        func hex(_ style: UIUserInterfaceStyle) -> UInt32 {
+            var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+            UIColor(token)
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+                .getRed(&r, green: &g, blue: &b, alpha: &a)
+            let red = UInt32((r * 255).rounded())
+            let green = UInt32((g * 255).rounded())
+            let blue = UInt32((b * 255).rounded())
+            return (red << 16) | (green << 8) | blue
+        }
+        #expect(hex(.light) == 0x111111)
+        #expect(hex(.dark) == 0xF6F3EE)
     }
 
     @Test func whiteLabelsOnFilledButtonsMeetAA() {
@@ -85,6 +110,36 @@ struct ContrastTests {
         #expect(contrast(OursColor.lavenderDeep, .white) < 3.0)
         #expect(contrast(OursColor.sage, .white) < 3.0)
         #expect(contrast(OursColor.peach, .white) < 3.0)
+    }
+}
+
+// MARK: - Lilacs
+
+/// The three lilacs differ by hue alone (1.08–1.24:1 apart), so none of them may be what
+/// tells one tone from another.
+struct LilacTests {
+    private static let lilacs = [OursColor.lavender, OursColor.lavenderDeep, OursColor.periwinkle]
+
+    @Test func badgeTonesUseAtMostOneLilac() {
+        let tones: [OursBadgeTone] = [.attention, .feature, .success, .neutral, .error]
+        let lilacFills = tones.map(\.background).filter { Self.lilacs.contains($0) }
+        #expect(lilacFills.count <= 1, "two badge tones would differ only by lilac")
+    }
+
+    @Test func messageTonesUseNoLilac() {
+        for tone in OursMessageTone.allCases {
+            #expect(!Self.lilacs.contains(tone.background), "\(tone) sits on a lilac")
+        }
+    }
+
+    /// The reason the rule exists. If a lilac is ever darkened far enough to stand apart in
+    /// lightness, this fails and the rule can be revisited.
+    @Test func lilacsAreTooCloseToSeparateByLightness() {
+        for (i, a) in Self.lilacs.enumerated() {
+            for b in Self.lilacs.dropFirst(i + 1) {
+                #expect(contrast(a, b) < 1.5)
+            }
+        }
     }
 }
 
@@ -160,6 +215,27 @@ struct LayoutTests {
         }
     }
 
+    @Test func radiusScaleFollowsTheFourPointGrid() {
+        let scale: [CGFloat] = [
+            OursRadius.xxs, OursRadius.xs, OursRadius.sm, OursRadius.md, OursRadius.lg, OursRadius.xl
+        ]
+        #expect(scale == scale.sorted(), "radius scale is out of order")
+        for value in scale {
+            #expect(value.truncatingRemainder(dividingBy: 4) == 0, "radius \(value) is off the 4pt grid")
+        }
+    }
+
+    /// Fixed sizes used to be literals inside components. As tokens they stay on the grid.
+    @Test func fixedSizesFollowTheFourPointGrid() {
+        let sizes: [CGFloat] = [
+            OursSize.progressTrack, OursSize.overlayButton, OursSize.avatar, OursSize.iconTile,
+            OursSize.figureDisc, OursSize.statusDisc, OursSize.thumbnail, OursSize.photoTile
+        ]
+        for value in sizes {
+            #expect(value.truncatingRemainder(dividingBy: 4) == 0, "size \(value) is off the 4pt grid")
+        }
+    }
+
     @Test func touchTargetsMeetTheMinimum() {
         #expect(OursSize.minimumTouchTarget >= 44)
         #expect(OursSize.buttonHeight >= OursSize.minimumTouchTarget)
@@ -200,6 +276,18 @@ struct ButtonColourTests {
         }
     }
 
+    /// Disabled controls are exempt from WCAG 1.4.3, and reaching 4.5:1 would make a disabled
+    /// button look more usable. The label is held to the large-text floor instead, so it stays
+    /// legible: `stone` on `disabled` is 4.05:1. A tweak that lightens `stone` or darkens
+    /// `disabled` past 3:1 fails here.
+    @Test(arguments: [OursButtonKind.primary, .destructive])
+    func disabledLabelStaysLegibleOnItsFill(_ kind: OursButtonKind) {
+        let label = kind.labelColor(pressed: false, isEnabled: false, override: nil)
+        let fill = kind.backgroundColor(pressed: false, isEnabled: false)
+        let ratio = contrast(label, fill)
+        #expect(ratio >= 3.0, "disabled \(kind) label is \(String(format: "%.2f", ratio)):1")
+    }
+
     @Test func filledKindsMeetContrastWithTheirLabel() {
         for kind in [OursButtonKind.primary, .destructive] {
             let label = kind.labelColor(pressed: false, isEnabled: true, override: nil)
@@ -212,8 +300,8 @@ struct ButtonColourTests {
 // MARK: - Text fields
 
 struct TextFieldBorderTests {
-    @Test func restingFieldsUseTheHairlineBorder() {
-        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: false, isEnabled: true) == OursColor.mist)
+    @Test func restingFieldsUseTheControlOutline() {
+        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: false, isEnabled: true) == OursColor.outline)
         #expect(OursTextFieldBorder.width(state: .neutral, isFocused: false) == 1)
     }
 
@@ -256,6 +344,26 @@ struct TextFieldBorderTests {
         #expect(contrast(OursColor.lavender, OursColor.surfaceBase) < 3.0, "lavender would not have")
     }
 
+    /// WCAG 1.4.11: the edge that identifies a control owes 3:1 against what is inside it and
+    /// what is around it. Fields and chips are white and sit on cream (1.11:1 apart), so the
+    /// border carries it alone. `mist` measured 1.26:1 and 1.14:1 here.
+    @Test func restingControlBorderMeetsUIContrastOnBothGrounds() {
+        for (groundName, ground) in [
+            ("surfaceBase", OursColor.surfaceBase),
+            ("backgroundPrimary", OursColor.backgroundPrimary)
+        ] {
+            let ratio = contrast(OursColor.outline, ground)
+            #expect(ratio >= 3.0, "outline on \(groundName) is \(String(format: "%.2f", ratio)):1")
+        }
+        #expect(contrast(OursColor.mist, OursColor.surfaceBase) < 3.0, "mist would not have")
+    }
+
+    /// Focus is the stronger state. If the resting border ever outweighs it, focusing a field
+    /// would look like it made the field lighter.
+    @Test func focusOutweighsTheRestingBorder() {
+        #expect(contrast(OursColor.focus, OursColor.surfaceBase) > contrast(OursColor.outline, OursColor.surfaceBase))
+    }
+
     /// Error and success borders are the other two state signals, and owe the same 3:1.
     @Test func stateBordersMeetUIContrast() {
         for (name, color) in [("error", OursColor.error), ("success", OursColor.success)] {
@@ -286,6 +394,14 @@ struct MessageBannerTests {
     @Test(arguments: OursMessageTone.allCases)
     func everyToneIsLegibleOnTheAppBackground(_ tone: OursMessageTone) {
         #expect(contrast(tone.foreground, OursColor.backgroundPrimary) >= 4.5)
+    }
+
+    /// Every banner ground is within 1.11:1 of cream, so without an edge a banner on the app
+    /// background reads as loose text. The border has to clear 3:1 against both sides of it.
+    @Test(arguments: OursMessageTone.allCases)
+    func everyToneHasAnEdgeVisibleOnTheAppBackground(_ tone: OursMessageTone) {
+        #expect(contrast(tone.border, OursColor.backgroundPrimary) >= 3.0, "\(tone) edge on cream")
+        #expect(contrast(tone.border, tone.background) >= 3.0, "\(tone) edge on its own fill")
     }
 
     /// Two tones that look alike defeat the point of having tones.

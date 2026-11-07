@@ -57,6 +57,7 @@ VStack(spacing: OursSpacing.md) {
 | `OursColor` | Brand, neutral, surface and semantic colours |
 | `OursTextStyle` | The 9-step type scale, Dynamic Type aware, with specified line heights |
 | `OursSpacing` · `OursRadius` · `OursSize` · `OursScreenMargin` | 4pt grid, radius scale, fixed sizes |
+| `OursIconSize` · `OursStroke` | Free-standing symbol sizes; stroke widths and the dash pattern |
 | `OursElevation` | Three levels, with the shadow and border each specifies |
 | `OursMotion` | Durations, animations, and Reduce Motion handling |
 | `OursButton` · `OursBadge` | Base components |
@@ -78,6 +79,20 @@ OursButton("Skip", kind: .tertiary) { … }
 
 Disabled buttons ignore the override, so a caller cannot tint an unusable control into
 looking usable.
+
+### Appearance
+
+Ours is light-only until the docs define a dark palette. Put `.oursAppearance()` once on the
+app's root view: it pins the light colour scheme so system sheets, controls and materials don't
+turn dark around tokens that don't.
+
+```swift
+WindowGroup { RootView().oursAppearance() }
+```
+
+Tokens are built to adapt. A token gets a dark value by changing `Color(ours: hex)` to
+`Color(ours: light, dark: dark)`, and the contrast tests already run in both appearances, so a
+dark value has to pass AA before it can ship.
 
 ## What's deliberately not in it
 
@@ -106,6 +121,9 @@ The suite is mostly guards rather than examples. The one worth knowing about com
 tokens in the source plates failed that bar and were darkened; this test is what stops them
 drifting back. It is verified to bite — reverting `stone` to the plate's `#A3A3A3` fails with
 2.28:1 and 2.52:1.
+
+A second holds every control's resting border (`outline`) to the 3:1 WCAG asks of a boundary
+you need to see to find the control, on both grounds; `mist` is for decorative hairlines only.
 
 Others check that the serif stays reserved for headlines, that the spacing scale stays on the
 4pt grid, that touch targets meet 44pt, and that every font file is present in the resource

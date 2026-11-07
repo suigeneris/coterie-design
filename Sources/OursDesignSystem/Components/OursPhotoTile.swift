@@ -10,7 +10,7 @@ public struct OursPhotoTile: View {
     private let content: Content
     private let side: CGFloat
 
-    public init(_ content: Content, side: CGFloat = 160) {
+    public init(_ content: Content, side: CGFloat = OursSize.photoTile) {
         self.content = content
         self.side = side
     }
@@ -45,7 +45,7 @@ public struct OursPhotoTile: View {
     private func addTile(title: String, detail: String) -> some View {
         VStack(spacing: OursSpacing.xxs) {
             Image(systemName: "plus")
-                .font(.system(size: 22, weight: .semibold))
+                .font(.system(size: OursIconSize.md, weight: .semibold))
                 .foregroundStyle(OursColor.forest)
                 .accessibilityHidden(true)
             Text(title)
@@ -64,7 +64,7 @@ public struct OursPhotoTile: View {
         .overlay {
             shape.strokeBorder(
                 OursColor.stone,
-                style: StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                style: StrokeStyle(lineWidth: OursStroke.medium, dash: OursStroke.dash)
             )
         }
         .accessibilityElement(children: .combine)
@@ -82,11 +82,11 @@ public struct OursPhotoTile: View {
                 if let onRemove {
                     Button(action: onRemove) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: OursIconSize.xs, weight: .bold))
                             .foregroundStyle(.white)
-                            .frame(width: 28, height: 28)
+                            .frame(width: OursSize.overlayButton, height: OursSize.overlayButton)
                             .background(OursColor.forest, in: Circle())
-                            .overlay { Circle().strokeBorder(.white, lineWidth: 1.5) }
+                            .overlay { Circle().strokeBorder(.white, lineWidth: OursStroke.medium) }
                             .frame(
                                 width: OursSize.minimumTouchTarget,
                                 height: OursSize.minimumTouchTarget

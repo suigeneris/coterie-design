@@ -43,12 +43,12 @@ public enum OursTextFieldBorder {
         switch state {
         case .error: return OursColor.error
         case .success: return OursColor.success
-        case .neutral: return isFocused ? OursColor.focus : OursColor.mist
+        case .neutral: return isFocused ? OursColor.focus : OursColor.outline
         }
     }
 
     public static func width(state: OursFieldState, isFocused: Bool) -> CGFloat {
-        state == .neutral && !isFocused ? 1 : 2
+        state == .neutral && !isFocused ? OursStroke.hairline : OursStroke.strong
     }
 }
 

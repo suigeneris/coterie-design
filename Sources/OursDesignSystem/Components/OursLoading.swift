@@ -14,7 +14,7 @@ public struct OursDelayed<Content: View>: View {
 
     /// - Parameter delay: how long to stay silent. The default is roughly the point at which
     ///   a wait stops feeling instant.
-    public init(by delay: Duration = .milliseconds(400), @ViewBuilder content: @escaping () -> Content) {
+    public init(by delay: Duration = OursMotion.feedbackDelay, @ViewBuilder content: @escaping () -> Content) {
         self.delay = delay
         self.content = content
     }
@@ -107,9 +107,9 @@ public struct OursErrorScreen: View {
     public var body: some View {
         VStack(spacing: OursSpacing.md) {
             Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 28))
+                .font(.system(size: OursIconSize.lg))
                 .foregroundStyle(OursColor.error)
-                .frame(width: 72, height: 72)
+                .frame(width: OursSize.statusDisc, height: OursSize.statusDisc)
                 .background(OursColor.errorSurface, in: Circle())
                 .accessibilityHidden(true)
 

@@ -12,6 +12,10 @@ public enum OursMotion {
     /// ~400ms — emphasis and complex motion.
     public static let expressive: TimeInterval = 0.40
 
+    /// How long to show nothing before acknowledging a wait. Below this a wait still feels
+    /// instant, and a spinner that flashes reads as a glitch. Used by `OursDelayed`.
+    public static let feedbackDelay: Duration = .milliseconds(400)
+
     /// Scale applied to a control while pressed.
     public static let pressedScale: CGFloat = 0.98
 
