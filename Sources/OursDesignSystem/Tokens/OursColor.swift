@@ -97,9 +97,11 @@ public enum OursColor {
     public static let warning = Color(ours: 0x8A6410)
     /// Errors and destructive actions.
     public static let error = Color(ours: 0xC62828)
-    /// Neutral informational messages. Darkened from the plate's `#557C8A`, which measured
-    /// 4.09:1 on cream. At 4.51:1 this is the minimum passing value and has no headroom.
-    public static let info = Color(ours: 0x507582)
+    /// Neutral informational messages. Darkened along its own hue from the plate's `#557C8A`
+    /// (4.09:1 on cream), first to the bare minimum `#507582` (4.51:1), then to this: 5.12:1
+    /// on cream, 5.66:1 on white. It carries text and a banner edge on both grounds, so it
+    /// needs headroom rather than sitting on the line.
+    public static let info = Color(ours: 0x4A6C78)
 
     // MARK: Fills
 
