@@ -22,6 +22,14 @@ public enum OursFieldState: Equatable, Sendable {
         case .success(let text): text
         }
     }
+
+    var messageColor: Color {
+        switch self {
+        case .error: OursColor.error
+        case .success: OursColor.success
+        case .neutral: OursColor.stone
+        }
+    }
 }
 
 /// Resolves a field's border. Pure, so it can be tested without rendering.
@@ -77,21 +85,13 @@ public struct OursTextField: View {
         self.state = state
     }
 
-    private var messageColor: Color {
-        switch state {
-        case .error: OursColor.error
-        case .success: OursColor.success
-        case .neutral: OursColor.stone
-        }
-    }
-
     public var body: some View {
         VStack(alignment: .leading, spacing: OursSpacing.xxs) {
             field
             if let message = state.message {
                 Text(message)
                     .oursTextStyle(.bodySmall)
-                    .foregroundStyle(messageColor)
+                    .foregroundStyle(state.messageColor)
                     .padding(.horizontal, OursSpacing.xxs)
             }
         }

@@ -60,6 +60,10 @@ VStack(spacing: OursSpacing.md) {
 | `OursElevation` | Three levels, with the shadow and border each specifies |
 | `OursMotion` | Durations, animations, and Reduce Motion handling |
 | `OursButton` · `OursBadge` | Base components |
+| `OursChip` · `OursTextArea` | Selection chip, multi-line text field with a code-point counter |
+| `OursFundingBar` · `OursStepProgress` · `OursSkeleton` | Progress bars with labels, and a loading placeholder |
+| `OursAvatarGroup` · `OursPhotoTile` | Initials or remote avatars with an open place, and a photo add, preparing and preview tile |
+| `OursProductCard` · `OursOwnershipCard` · `OursInformationCard` | Cards that take strings and slots, never a domain type |
 
 ### Setting a button's label colour
 
@@ -77,10 +81,10 @@ looking usable.
 
 ## What's deliberately not in it
 
-**Anything that knows about the product.** No `Pool`, no `Profile`, no domain models. Product
-components — pool cards, cap tables, co-owner stacks — are composed from these primitives in
-the app, not here. The moment this package imports a domain type it stops being a design
-system and becomes a second app target.
+**Anything that knows about the product.** No `Pool`, no `Profile`, no domain models. Anything
+that takes a domain type, such as a `Pool`, is composed from these primitives in the app, not
+here. The moment this package imports a domain type it stops being a design system and becomes
+a second app target.
 
 ## Fonts
 
