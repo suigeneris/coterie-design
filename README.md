@@ -79,6 +79,20 @@ OursButton("Skip", kind: .tertiary) { … }
 Disabled buttons ignore the override, so a caller cannot tint an unusable control into
 looking usable.
 
+### Appearance
+
+Ours is light-only until the docs define a dark palette. Put `.oursAppearance()` once on the
+app's root view: it pins the light colour scheme so system sheets, controls and materials don't
+turn dark around tokens that don't.
+
+```swift
+WindowGroup { RootView().oursAppearance() }
+```
+
+Tokens are built to adapt. A token gets a dark value by changing `Color(ours: hex)` to
+`Color(ours: light, dark: dark)`, and the contrast tests already run in both appearances, so a
+dark value has to pass AA before it can ship.
+
 ## What's deliberately not in it
 
 **Anything that knows about the product.** No `Pool`, no `Profile`, no domain models. Anything

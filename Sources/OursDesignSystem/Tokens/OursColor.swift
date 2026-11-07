@@ -1,9 +1,17 @@
 import SwiftUI
+import UIKit
 
 /// The Ours colour palette.
 ///
-/// Values are transcribed from the design system plates, with three tokens darkened to meet
-/// the WCAG AA commitment the system makes. See `docs/design/ours-design-system.md` §01.
+/// Values are transcribed from the design system plates, with tokens darkened where needed to
+/// meet the WCAG AA commitment the system makes. See `docs/design/ours-design-system.md` §01.
+///
+/// ## Appearance
+/// Ours is light-only for now: the plates define no dark palette, and the app is pinned to
+/// light with `.oursAppearance()`. Every token is still built so it *can* adapt. To give one
+/// a dark value, write `Color(ours: light, dark: dark)` instead of `Color(ours: hex)`. The
+/// contrast tests resolve every token in both appearances, so a dark value has to pass AA
+/// before it ships. Once every token has one, remove the pin in `oursAppearance()`.
 public enum OursColor {
 
     // MARK: Brand
@@ -63,7 +71,7 @@ public enum OursColor {
     // MARK: Surfaces
 
     /// Cards, sheets and the navigation bar.
-    public static let surfaceBase = Color.white
+    public static let surfaceBase = Color(ours: 0xFFFFFF)
     /// Grouped and secondary backgrounds.
     public static let surfaceAlt = cream
     /// Main app background.
@@ -90,7 +98,7 @@ public enum OursColor {
 }
 
 extension Color {
-    /// Builds a colour from a 24-bit RGB literal, e.g. `0x0F3D34`.
+    /// Builds a colour from a 24-bit RGB literal, e.g. `0x0F3D34`, the same in light and dark.
     init(ours hex: UInt32) {
         self.init(
             .sRGB,
@@ -99,5 +107,35 @@ extension Color {
             blue: Double(hex & 0xFF) / 255,
             opacity: 1
         )
+    }
+
+    /// Builds a colour that resolves to `light` or `dark` with the interface style.
+    init(ours light: UInt32, dark: UInt32) {
+        self.init(uiColor: UIColor { traits in
+            UIColor(ours: traits.userInterfaceStyle == .dark ? dark : light)
+        })
+    }
+}
+
+extension UIColor {
+    convenience init(ours hex: UInt32) {
+        self.init(
+            red: CGFloat((hex >> 16) & 0xFF) / 255,
+            green: CGFloat((hex >> 8) & 0xFF) / 255,
+            blue: CGFloat(hex & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+}
+
+public extension View {
+    /// Applies the appearance Ours supports. Put it once, on the app's root view.
+    ///
+    /// Ours has no dark palette yet, so this pins the light colour scheme: without it, system
+    /// controls, sheets and materials turn dark around tokens that do not, and text in a
+    /// system component can land on the wrong ground. When every token has a dark value,
+    /// this becomes a no-op and the system follows the device.
+    func oursAppearance() -> some View {
+        preferredColorScheme(.light)
     }
 }

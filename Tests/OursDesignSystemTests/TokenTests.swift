@@ -5,10 +5,12 @@ import UIKit
 
 // MARK: - Contrast
 
-/// Relative luminance per WCAG 2.1.
-private func luminance(_ color: Color) -> Double {
+/// Relative luminance per WCAG 2.1, with the colour resolved in the given appearance.
+private func luminance(_ color: Color, in style: UIUserInterfaceStyle) -> Double {
     var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-    UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+    UIColor(color)
+        .resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+        .getRed(&r, green: &g, blue: &b, alpha: &a)
     func channel(_ value: CGFloat) -> Double {
         let v = Double(value)
         return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
@@ -16,8 +18,12 @@ private func luminance(_ color: Color) -> Double {
     return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
 }
 
-func contrast(_ a: Color, _ b: Color) -> Double {
-    let (la, lb) = (luminance(a), luminance(b))
+/// Both appearances a token can resolve in. Today every token resolves the same in each;
+/// this is what holds a dark value to AA the day one is added.
+let appearances: [UIUserInterfaceStyle] = [.light, .dark]
+
+func contrast(_ a: Color, _ b: Color, in style: UIUserInterfaceStyle = .light) -> Double {
+    let (la, lb) = (luminance(a, in: style), luminance(b, in: style))
     return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 }
 
@@ -36,17 +42,36 @@ struct ContrastTests {
     ]
 
     @Test(arguments: bodyText)
-    func textTokensMeetAAOnBothGrounds(_ token: (name: String, color: Color)) {
-        for (groundName, ground) in [
-            ("backgroundPrimary", OursColor.backgroundPrimary),
-            ("surfaceBase", OursColor.surfaceBase)
-        ] {
-            let ratio = contrast(token.color, ground)
-            #expect(
-                ratio >= 4.5,
-                "\(token.name) on \(groundName) is \(String(format: "%.2f", ratio)):1, below AA 4.5"
-            )
+    func textTokensMeetAAOnBothGroundsInBothAppearances(_ token: (name: String, color: Color)) {
+        for style in appearances {
+            for (groundName, ground) in [
+                ("backgroundPrimary", OursColor.backgroundPrimary),
+                ("surfaceBase", OursColor.surfaceBase)
+            ] {
+                let ratio = contrast(token.color, ground, in: style)
+                #expect(
+                    ratio >= 4.5,
+                    "\(token.name) on \(groundName) (\(style == .dark ? "dark" : "light")) is \(String(format: "%.2f", ratio)):1, below AA 4.5"
+                )
+            }
         }
+    }
+
+    /// The mechanism a dark palette will use: one token, two values, picked by the trait.
+    @Test func adaptiveTokensResolvePerAppearance() {
+        let token = Color(ours: 0x111111, dark: 0xF6F3EE)
+        func hex(_ style: UIUserInterfaceStyle) -> UInt32 {
+            var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+            UIColor(token)
+                .resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+                .getRed(&r, green: &g, blue: &b, alpha: &a)
+            let red = UInt32((r * 255).rounded())
+            let green = UInt32((g * 255).rounded())
+            let blue = UInt32((b * 255).rounded())
+            return (red << 16) | (green << 8) | blue
+        }
+        #expect(hex(.light) == 0x111111)
+        #expect(hex(.dark) == 0xF6F3EE)
     }
 
     @Test func whiteLabelsOnFilledButtonsMeetAA() {
