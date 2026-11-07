@@ -28,7 +28,7 @@ public enum OursColor {
     // No lilac marks a state, and no two lilacs appear in the same set of tones.
     //
     //   lavender      a backdrop that carries content: the ownership card, the feature badge
-    //   lavenderDeep  a lilac that must be seen as a shape: on cream, or as a figure on lavender
+    //   lavenderDeep  a lilac that must be seen as a shape on cream: the onboarding card stack
     //   periwinkle    only layered with lavenderDeep, as in the onboarding card stack
     //
     // All three are fill only. `ink`, `forest` and `slate` pass AA on every one.
@@ -38,8 +38,8 @@ public enum OursColor {
     public static let lavender = Color(ours: 0xE9E6FF)
     /// Attention badges and small accents. Fill only — 1.34:1 against white.
     public static let yellow = Color(ours: 0xF2E074)
-    /// A lilac that must be seen as a shape: a decorative surface on cream, or a figure on a
-    /// `lavender` backdrop like the ownership card's fraction disc. Fill only.
+    /// A lilac that must be seen as a shape on cream (1.24:1), as in the onboarding card stack.
+    /// Not a figure on `lavender`: at 1.13:1 a shape there reads by hue alone. Fill only.
     public static let lavenderDeep = Color(ours: 0xE4D6F7)
     /// Only ever layered with `lavenderDeep`, as in the onboarding card stack. Fill only.
     /// Never use it to tell a state apart from another lilac: 1.08:1 from `lavenderDeep`.

@@ -111,8 +111,14 @@ struct ChipTests {
 struct ComponentContrastTests {
     @Test func ownershipCardTextMeetsAA() {
         #expect(contrast(OursColor.ink, OursColor.lavender) >= 4.5, "title on lavender")
-        #expect(contrast(OursColor.ink, OursColor.lavenderDeep) >= 4.5, "fraction on lavenderDeep")
+        #expect(contrast(OursOwnershipDisc.label, OursOwnershipDisc.fill) >= 4.5, "fraction on its disc")
         #expect(contrast(OursColor.slate, OursColor.lavender) >= 4.5, "detail on lavender")
+    }
+
+    /// The disc has to stand out from the card it sits on, not just carry legible text.
+    /// `lavenderDeep` on `lavender` was 1.13:1.
+    @Test func ownershipDiscStandsOutFromItsCard() {
+        #expect(contrast(OursOwnershipDisc.fill, OursColor.lavender) >= 3.0)
     }
 
     @Test func avatarInitialsMeetAAOnMist() {
