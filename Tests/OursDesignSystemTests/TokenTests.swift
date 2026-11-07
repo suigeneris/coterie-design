@@ -258,6 +258,16 @@ struct ButtonColourTests {
         #expect(OursButtonKind.destructive.labelColor(pressed: true, isEnabled: true, override: nil) == .white)
     }
 
+    /// A tertiary has no container, so the label is the only thing that can show a press.
+    @Test func tertiaryLabelDarkensWhilePressed() {
+        #expect(OursButtonKind.tertiary.labelColor(pressed: true, isEnabled: true, override: nil) == OursColor.ink)
+    }
+
+    /// A secondary shows a press through its outline instead.
+    @Test func secondaryLabelHoldsWhilePressed() {
+        #expect(OursButtonKind.secondary.labelColor(pressed: true, isEnabled: true, override: nil) == OursColor.forest)
+    }
+
     @Test(arguments: [OursButtonKind.primary, .secondary, .tertiary, .destructive])
     func overrideReplacesTheLabelColour(_ kind: OursButtonKind) {
         #expect(kind.labelColor(pressed: false, isEnabled: true, override: OursColor.stone) == OursColor.stone)
