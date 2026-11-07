@@ -212,8 +212,8 @@ struct ButtonColourTests {
 // MARK: - Text fields
 
 struct TextFieldBorderTests {
-    @Test func restingFieldsUseTheHairlineBorder() {
-        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: false, isEnabled: true) == OursColor.mist)
+    @Test func restingFieldsUseTheControlOutline() {
+        #expect(OursTextFieldBorder.color(state: .neutral, isFocused: false, isEnabled: true) == OursColor.outline)
         #expect(OursTextFieldBorder.width(state: .neutral, isFocused: false) == 1)
     }
 
@@ -254,6 +254,26 @@ struct TextFieldBorderTests {
         let ratio = contrast(OursColor.focus, OursColor.surfaceBase)
         #expect(ratio >= 3.0, "focus on surfaceBase is \(String(format: "%.2f", ratio)):1")
         #expect(contrast(OursColor.lavender, OursColor.surfaceBase) < 3.0, "lavender would not have")
+    }
+
+    /// WCAG 1.4.11: the edge that identifies a control owes 3:1 against what is inside it and
+    /// what is around it. Fields and chips are white and sit on cream (1.11:1 apart), so the
+    /// border carries it alone. `mist` measured 1.26:1 and 1.14:1 here.
+    @Test func restingControlBorderMeetsUIContrastOnBothGrounds() {
+        for (groundName, ground) in [
+            ("surfaceBase", OursColor.surfaceBase),
+            ("backgroundPrimary", OursColor.backgroundPrimary)
+        ] {
+            let ratio = contrast(OursColor.outline, ground)
+            #expect(ratio >= 3.0, "outline on \(groundName) is \(String(format: "%.2f", ratio)):1")
+        }
+        #expect(contrast(OursColor.mist, OursColor.surfaceBase) < 3.0, "mist would not have")
+    }
+
+    /// Focus is the stronger state. If the resting border ever outweighs it, focusing a field
+    /// would look like it made the field lighter.
+    @Test func focusOutweighsTheRestingBorder() {
+        #expect(contrast(OursColor.focus, OursColor.surfaceBase) > contrast(OursColor.outline, OursColor.surfaceBase))
     }
 
     /// Error and success borders are the other two state signals, and owe the same 3:1.

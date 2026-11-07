@@ -26,6 +26,12 @@ public struct OursChip: View {
         isSelected ? .white : OursColor.ink
     }
 
+    /// `outline`, not `mist`: a white chip on cream is 1.11:1, so the border is what tells
+    /// someone the chip is there to tap. A selected chip's `forest` fill is its own edge.
+    public nonisolated static func border(isSelected: Bool) -> Color? {
+        isSelected ? nil : OursColor.outline
+    }
+
     public var body: some View {
         Button(action: action) {
             HStack(spacing: OursSpacing.xs) {
@@ -43,9 +49,9 @@ public struct OursChip: View {
             .background(Self.background(isSelected: isSelected))
             .clipShape(RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous))
             .overlay {
-                if !isSelected {
+                if let border = Self.border(isSelected: isSelected) {
                     RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous)
-                        .strokeBorder(OursColor.mist, lineWidth: 1)
+                        .strokeBorder(border, lineWidth: 1)
                 }
             }
             .contentShape(RoundedRectangle(cornerRadius: OursRadius.xs, style: .continuous))

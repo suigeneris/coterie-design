@@ -93,6 +93,11 @@ struct ChipTests {
         #expect(OursChip.foreground(isSelected: false) == OursColor.ink)
     }
 
+    @Test func unselectedIsOutlinedSoItReadsOnCream() {
+        #expect(OursChip.border(isSelected: false) == OursColor.outline)
+        #expect(OursChip.border(isSelected: true) == nil)
+    }
+
     @Test(arguments: [true, false])
     func labelMeetsAAOnItsFill(_ isSelected: Bool) {
         let ratio = contrast(

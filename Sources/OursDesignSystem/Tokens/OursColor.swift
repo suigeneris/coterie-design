@@ -40,18 +40,25 @@ public enum OursColor {
     /// Tertiary text, metadata, placeholders. Darkened from the plate's `#A3A3A3`, which
     /// measured 2.28:1 on cream.
     public static let stone = Color(ours: 0x6E6E6E)
-    /// Borders and dividers.
+    /// Decorative borders and dividers: card hairlines, separators, progress tracks.
+    ///
+    /// Not for the edge of an interactive control. At 1.26:1 on white and 1.14:1 on cream it
+    /// is below the 3:1 WCAG asks of a boundary someone needs to see to find the control. Use
+    /// `outline` for that.
     public static let mist = Color(ours: 0xE5E5E7)
-    /// Border of a focused input.
+    /// Resting border of an interactive control: text fields, text areas, unselected chips.
+    ///
+    /// WCAG 1.4.11 asks 3:1 for the edge that identifies a control. A white field on cream is
+    /// 1.11:1, so the border is the only thing marking it out. This measures 3.63:1 on white
+    /// and 3.28:1 on cream. Cool-tinted like `mist` and `slate`, so it sits in the neutrals.
+    public static let outline = Color(ours: 0x86868A)
+    /// Border of a focused input, and the text caret.
     ///
     /// §11 asks for "a lavender border" when focused, but the palette's lavenders are all
-    /// pale backing tints. `lavender` measures 1.22:1 on a white field and `mist` — the
-    /// resting border — measures 1.26:1, so swapping one for the other changes the hue and
-    /// almost nothing else; the focused state would not read as a state. At 3.03:1 this does.
-    ///
-    /// Like `info`, it sits on the minimum with no headroom. Darkening it is safe; lightening
-    /// it is not.
-    public static let focus = Color(ours: 0x9D87DC)
+    /// pale backing tints that measure about 1.2:1 on a white field. This keeps the violet
+    /// hue at 4.65:1, darkened from `#9D87DC` (3.03:1) once resting fields took the
+    /// 3.63:1 `outline`: focus must read as the stronger state, not the lighter one.
+    public static let focus = Color(ours: 0x7E61D1)
 
     // MARK: Surfaces
 

@@ -43,7 +43,7 @@ public enum OursTextFieldBorder {
         switch state {
         case .error: return OursColor.error
         case .success: return OursColor.success
-        case .neutral: return isFocused ? OursColor.focus : OursColor.mist
+        case .neutral: return isFocused ? OursColor.focus : OursColor.outline
         }
     }
 

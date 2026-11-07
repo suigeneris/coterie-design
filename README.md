@@ -107,6 +107,9 @@ tokens in the source plates failed that bar and were darkened; this test is what
 drifting back. It is verified to bite — reverting `stone` to the plate's `#A3A3A3` fails with
 2.28:1 and 2.52:1.
 
+A second holds every control's resting border (`outline`) to the 3:1 WCAG asks of a boundary
+you need to see to find the control, on both grounds; `mist` is for decorative hairlines only.
+
 Others check that the serif stays reserved for headlines, that the spacing scale stays on the
 4pt grid, that touch targets meet 44pt, and that every font file is present in the resource
 bundle.
