@@ -79,17 +79,20 @@ public enum OursSize {
     public static let photoTile: CGFloat = 160
 }
 
-/// Point sizes for SF Symbols that stand on their own rather than scaling with text.
-/// A symbol next to text uses `imageScale` instead, so it follows Dynamic Type.
+/// Point sizes for SF Symbols that stand on their own rather than scaling with text. A symbol
+/// next to text uses `imageScale` instead, so it follows Dynamic Type.
+///
+/// `sm`, `md` and `lg` are steps of the §08 icon scale (16 · 20 · 24 · 32). `xs` sits below
+/// it on purpose: it is only for a glyph inside a small control, where 16pt would crowd it.
 public enum OursIconSize {
-    /// 12pt — a glyph inside an `overlayButton`.
+    /// 12pt — a glyph inside an `overlayButton`. Not a free-standing icon size.
     public static let xs: CGFloat = 12
-    /// 14pt — chevrons, avatar placeholders and the open-place plus.
-    public static let sm: CGFloat = 14
-    /// 22pt — an icon in an `iconTile`, or the plus on an empty photo tile.
-    public static let md: CGFloat = 22
-    /// 28pt — the icon in a `statusDisc`.
-    public static let lg: CGFloat = 28
+    /// 16pt — small supporting indicators: chevrons, avatar placeholders, the open-place plus.
+    public static let sm: CGFloat = 16
+    /// 24pt — the default standard icon: in an `iconTile`, the plus on an empty photo tile.
+    public static let md: CGFloat = 24
+    /// 32pt — feature or prominent use: the icon in a `statusDisc`.
+    public static let lg: CGFloat = 32
 }
 
 /// Stroke widths.
