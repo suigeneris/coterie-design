@@ -186,6 +186,14 @@ struct OwnershipCardWordingTests {
         #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "1 place left", coOwners: ["Amara O."])
                 == "Puzzle Bag. 1 place left. With Amara O.")
     }
+
+    /// The full stop is added only when the last name doesn't already end with one.
+    @Test func theCardEndsWithExactlyOneFullStop() {
+        #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "1 place left", coOwners: ["Amara"])
+                == "Puzzle Bag. 1 place left. With Amara.")
+        #expect(OursShares.cardLabel(title: "New item", status: "2 places left", coOwners: [])
+                == "New item. 2 places left. Just you so far.")
+    }
 }
 
 struct CompactSizeTests {

@@ -53,8 +53,11 @@ public enum OursShares {
     }
 
     /// What VoiceOver reads for an ownership card: title, status, then who it's with.
+    /// A name shown as an initial ("Amara O.") already ends the sentence, so no second full stop
+    /// is added: VoiceOver would read "Amara O.." as a pause, and a braille display shows both.
     public static func cardLabel(title: String, status: String, coOwners: [String]) -> String {
-        "\(title). \(status). \(coOwnersPhrase(coOwners))."
+        let who = coOwnersPhrase(coOwners)
+        return "\(title). \(status). \(who)" + (who.hasSuffix(".") ? "" : ".")
     }
 }
 
