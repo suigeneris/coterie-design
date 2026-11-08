@@ -228,7 +228,7 @@ struct LayoutTests {
     /// Fixed sizes used to be literals inside components. As tokens they stay on the grid.
     @Test func fixedSizesFollowTheFourPointGrid() {
         let sizes: [CGFloat] = [
-            OursSize.progressTrack, OursSize.overlayButton, OursSize.avatar, OursSize.iconTile,
+            OursSize.progressTrack, OursSize.overlayButton, OursSize.avatar, OursSize.avatarCompact, OursSize.shareRing, OursSize.iconTile,
             OursSize.figureDisc, OursSize.statusDisc, OursSize.thumbnail, OursSize.photoTile
         ]
         for value in sizes {

@@ -12,6 +12,36 @@ public enum OursButtonKind: Sendable {
     case destructive
 }
 
+/// Button size. `.regular` is the 56pt button; `.compact` is a 44pt button sized to its
+/// label, for an action that sits inside a row or card rather than at the foot of a screen.
+public enum OursButtonSize: Sendable {
+    case regular
+    case compact
+}
+
+/// Resolved geometry for a kind at a size. Pure, so it can be tested without rendering.
+struct OursButtonMetrics: Equatable {
+    let isFullWidth: Bool
+    let height: CGFloat
+    let horizontalPadding: CGFloat
+    let cornerRadius: CGFloat
+
+    init(kind: OursButtonKind, size: OursButtonSize) {
+        switch size {
+        case .compact:
+            isFullWidth = false
+            height = OursSize.minimumTouchTarget
+            horizontalPadding = OursSpacing.md
+            cornerRadius = OursRadius.xs
+        case .regular:
+            isFullWidth = kind.isFullWidth
+            height = kind.isFullWidth ? OursSize.buttonHeight : OursSize.minimumTouchTarget
+            horizontalPadding = kind.isFullWidth ? OursSize.buttonHorizontalPadding : 0
+            cornerRadius = OursRadius.md
+        }
+    }
+}
+
 // MARK: - Colour resolution
 
 extension OursButtonKind {
@@ -90,6 +120,7 @@ public extension View {
 public struct OursButton: View {
     private let title: String
     private let kind: OursButtonKind
+    private let size: OursButtonSize
     private let systemImage: String?
     private let showsChevron: Bool
     private let isLoading: Bool
@@ -98,6 +129,7 @@ public struct OursButton: View {
     public init(
         _ title: String,
         kind: OursButtonKind = .primary,
+        size: OursButtonSize = .regular,
         systemImage: String? = nil,
         showsChevron: Bool = false,
         isLoading: Bool = false,
@@ -105,6 +137,7 @@ public struct OursButton: View {
     ) {
         self.title = title
         self.kind = kind
+        self.size = size
         self.systemImage = systemImage
         self.showsChevron = showsChevron
         self.isLoading = isLoading
@@ -129,7 +162,7 @@ public struct OursButton: View {
                 }
             }
         }
-        .buttonStyle(OursButtonStyle(kind: kind, isLoading: isLoading))
+        .buttonStyle(OursButtonStyle(kind: kind, size: size, isLoading: isLoading))
         .disabled(isLoading)
         .accessibilityLabel(title)
         .accessibilityValue(isLoading ? Text("Loading") : Text(""))
@@ -138,19 +171,23 @@ public struct OursButton: View {
 
 private struct OursButtonStyle: ButtonStyle {
     let kind: OursButtonKind
+    let size: OursButtonSize
     let isLoading: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         // A nested View is required so the style can read the environment: ButtonStyle is
         // not a View, so @Environment cannot be used in makeBody directly.
-        OursButtonBody(configuration: configuration, kind: kind, isLoading: isLoading)
+        OursButtonBody(configuration: configuration, kind: kind, size: size, isLoading: isLoading)
     }
 }
 
 private struct OursButtonBody: View {
     let configuration: ButtonStyleConfiguration
     let kind: OursButtonKind
+    let size: OursButtonSize
     let isLoading: Bool
+
+    private var metrics: OursButtonMetrics { OursButtonMetrics(kind: kind, size: size) }
 
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -173,14 +210,14 @@ private struct OursButtonBody: View {
         }
         .oursTextStyle(.button)
         .foregroundStyle(labelColor)
-        .frame(maxWidth: kind.isFullWidth ? .infinity : nil)
-        .frame(height: kind.isFullWidth ? OursSize.buttonHeight : OursSize.minimumTouchTarget)
-        .padding(.horizontal, kind.isFullWidth ? OursSize.buttonHorizontalPadding : 0)
+        .frame(maxWidth: metrics.isFullWidth ? .infinity : nil)
+        .frame(height: metrics.height)
+        .padding(.horizontal, metrics.horizontalPadding)
         .background(kind.backgroundColor(pressed: configuration.isPressed, isEnabled: isEnabled))
-        .clipShape(RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous))
         .overlay {
             if kind == .secondary {
-                RoundedRectangle(cornerRadius: OursRadius.md, style: .continuous)
+                RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous)
                     .strokeBorder(
                         isEnabled ? OursColor.forest : OursColor.stone,
                         lineWidth: configuration.isPressed ? OursStroke.strong : OursStroke.hairline

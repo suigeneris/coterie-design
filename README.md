@@ -65,6 +65,7 @@ VStack(spacing: OursSpacing.md) {
 | `OursFundingBar` · `OursStepProgress` · `OursSkeleton` | Progress bars with labels, and a loading placeholder |
 | `OursAvatarGroup` · `OursPhotoTile` | Initials or remote avatars with an open place, and a photo add, preparing and preview tile |
 | `OursProductCard` · `OursOwnershipCard` · `OursInformationCard` | Cards that take strings and slots, never a domain type |
+| `OursShareRing` | One arc per place around the item's photo; closes into a circle when full |
 
 ### Setting a button's label colour
 
