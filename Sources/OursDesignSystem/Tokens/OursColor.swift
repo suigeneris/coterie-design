@@ -27,13 +27,13 @@ public enum OursColor {
     // so they differ by hue alone: enough to decorate, never enough to tell two things apart.
     // No lilac marks a state, and no two lilacs appear in the same set of tones.
     //
-    //   lavender      a backdrop that carries content: the ownership card, the feature badge
+    //   lavender      a backdrop that carries content: the feature badge
     //   lavenderDeep  a lilac that must be seen as a shape on cream: the onboarding card stack
     //   periwinkle    only layered with lavenderDeep, as in the onboarding card stack
     //
     // All three are fill only. `ink`, `forest` and `slate` pass AA on every one.
 
-    /// A backdrop that carries content: the ownership card, the feature badge. Never a shape
+    /// A backdrop that carries content: the feature badge. Never a shape
     /// on its own on cream, where it nearly vanishes (1.10:1). Fill only, never text.
     public static let lavender = Color(ours: 0xE9E6FF)
     /// Attention badges and small accents. Fill only — 1.34:1 against white.
