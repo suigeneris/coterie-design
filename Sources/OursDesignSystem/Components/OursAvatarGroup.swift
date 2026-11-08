@@ -13,12 +13,25 @@ public struct OursAvatarGroup: View {
         }
     }
 
+    /// `.standard`: 32pt circles, 8pt apart. `.compact`: 24pt circles overlapping by 6, each
+    /// with a 2pt white edge so photos and initials read as one set, as on the ownership card.
+    public enum Style: Sendable {
+        case standard
+        case compact
+
+        var diameter: CGFloat { self == .compact ? OursSize.avatarCompact : OursSize.avatar }
+        var spacing: CGFloat { self == .compact ? -Self.compactOverlap : OursSpacing.xs }
+        static let compactOverlap: CGFloat = 6
+    }
+
     private let people: [Person]
     private let showsOpenPlace: Bool
+    private let style: Style
 
-    public init(people: [Person], showsOpenPlace: Bool) {
+    public init(people: [Person], showsOpenPlace: Bool, style: Style = .standard) {
         self.people = people
         self.showsOpenPlace = showsOpenPlace
+        self.style = style
     }
 
     public nonisolated static func initials(for name: String) -> String {
@@ -34,15 +47,20 @@ public struct OursAvatarGroup: View {
     }
 
     public var body: some View {
-        HStack(spacing: OursSpacing.xs) {
+        HStack(spacing: style.spacing) {
             ForEach(people) { person in
-                OursAvatar(person: person)
+                OursAvatar(person: person, diameter: style.diameter)
+                    .background {
+                        if style == .compact {
+                            Circle().fill(OursColor.surfaceBase).padding(-OursStroke.strong)
+                        }
+                    }
             }
             if showsOpenPlace {
                 Image(systemName: "plus")
                     .font(.system(size: OursIconSize.sm, weight: .semibold))
                     .foregroundStyle(OursColor.slate)
-                    .frame(width: OursAvatar.diameter, height: OursAvatar.diameter)
+                    .frame(width: style.diameter, height: style.diameter)
                     .background(OursColor.mist, in: Circle())
                     .accessibilityLabel("Open place")
             }
@@ -52,16 +70,15 @@ public struct OursAvatarGroup: View {
 }
 
 private struct OursAvatar: View {
-    static let diameter = OursSize.avatar
-
     let person: OursAvatarGroup.Person
+    let diameter: CGFloat
 
     var body: some View {
         ZStack {
             Circle().fill(OursColor.mist)
             content
         }
-        .frame(width: Self.diameter, height: Self.diameter)
+        .frame(width: diameter, height: diameter)
         .clipShape(Circle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(OursAvatarGroup.spokenName(for: person.name))

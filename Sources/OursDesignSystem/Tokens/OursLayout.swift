@@ -67,6 +67,10 @@ public enum OursSize {
     public static let overlayButton: CGFloat = 28
     /// 32pt — an avatar.
     public static let avatar: CGFloat = 32
+    /// 24pt — a compact avatar, overlapping in a row, as on the ownership card.
+    public static let avatarCompact: CGFloat = 24
+    /// 80pt — a share ring, including its stroke. The photo inside is 62.
+    public static let shareRing: CGFloat = 80
     /// 48pt — a tile holding an icon beside text, as on the information card.
     public static let iconTile: CGFloat = 48
     /// 64pt — a disc holding a short figure such as a fraction, as on the ownership card.
