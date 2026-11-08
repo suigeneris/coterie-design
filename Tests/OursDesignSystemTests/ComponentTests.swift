@@ -139,13 +139,17 @@ struct ShareRingTests {
     }
 
     @Test func takenPlacesFillFromTwelveOClock() {
-        let segments = OursShares.segments(places: 3, filled: 2)
-        #expect(segments.map(\.isFilled) == [true, true, false])
+        let filled = OursShares.segments(places: 3, filled: 2).map(\.isFilled)
+        #expect(filled == [true, true, false])
     }
 
     @Test func filledIsClampedToThePlaces() {
-        #expect(OursShares.segments(places: 3, filled: 7).allSatisfy(\.isFilled))
-        #expect(OursShares.segments(places: 3, filled: -1).allSatisfy { !$0.isFilled })
+        // Computed outside #expect: `allSatisfy` rethrows, and the macro expansion would
+        // otherwise demand `try` on a call that can't throw.
+        let overfilled = OursShares.segments(places: 3, filled: 7).map(\.isFilled)
+        let underfilled = OursShares.segments(places: 3, filled: -1).map(\.isFilled)
+        #expect(overfilled == [true, true, true])
+        #expect(underfilled == [false, false, false])
     }
 
     /// Arcs stay inside the circle, in order, with a gap between each pair.
