@@ -5,12 +5,16 @@ public struct OursAvatarGroup: View {
         public let id: UUID
         public let name: String
         public let imageURL: URL?
+        public let isYou: Bool
 
-        public init(id: UUID, name: String, imageURL: URL?) {
+        public init(id: UUID, name: String, imageURL: URL?, isYou: Bool = false) {
             self.id = id
             self.name = name
             self.imageURL = imageURL
+            self.isYou = isYou
         }
+
+        var showsPhoto: Bool { !isYou && imageURL != nil }
     }
 
     /// `.standard`: 32pt circles, 8pt apart. `.compact`: 24pt circles overlapping by 6, each
@@ -46,6 +50,14 @@ public struct OursAvatarGroup: View {
         return trimmed.isEmpty ? "Person" : trimmed
     }
 
+    nonisolated static let youBackground = OursColor.forest
+
+    nonisolated static let youForeground = Color.white
+
+    nonisolated static func spokenName(for person: Person) -> String {
+        person.isYou ? "You" : spokenName(for: person.name)
+    }
+
     public var body: some View {
         HStack(spacing: style.spacing) {
             ForEach(people) { person in
@@ -75,18 +87,25 @@ private struct OursAvatar: View {
 
     var body: some View {
         ZStack {
-            Circle().fill(OursColor.mist)
+            Circle().fill(person.isYou ? OursAvatarGroup.youBackground : OursColor.mist)
             content
         }
         .frame(width: diameter, height: diameter)
         .clipShape(Circle())
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(OursAvatarGroup.spokenName(for: person.name))
+        .accessibilityLabel(OursAvatarGroup.spokenName(for: person))
     }
 
     @ViewBuilder
     private var content: some View {
-        if let url = person.imageURL {
+        if person.isYou {
+            Text("You")
+                .font(.oursCaptionSemibold)
+                .foregroundStyle(OursAvatarGroup.youForeground)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+        } else if person.showsPhoto, let url = person.imageURL {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):

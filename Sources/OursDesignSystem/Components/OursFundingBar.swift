@@ -3,12 +3,14 @@ import SwiftUI
 public struct OursFundingBar: View {
     private let filled: Int
     private let total: Int
+    private let showsLabel: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    public init(filled: Int, total: Int) {
+    public init(filled: Int, total: Int, showsLabel: Bool = true) {
         self.filled = filled
         self.total = total
+        self.showsLabel = showsLabel
     }
 
     public nonisolated static func label(filled: Int, total: Int) -> String {
@@ -25,9 +27,11 @@ public struct OursFundingBar: View {
         let fraction = Self.fraction(filled: filled, total: total)
 
         VStack(alignment: .leading, spacing: OursSpacing.xs) {
-            Text(label)
-                .oursTextStyle(.bodySmall)
-                .foregroundStyle(OursColor.slate)
+            if showsLabel {
+                Text(label)
+                    .oursTextStyle(.bodySmall)
+                    .foregroundStyle(OursColor.slate)
+            }
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
@@ -49,5 +53,6 @@ public struct OursFundingBar: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label)
+        .accessibilityHidden(!showsLabel)
     }
 }
