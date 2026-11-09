@@ -3,10 +3,18 @@ import SwiftUI
 public struct OursStepProgress: View {
     private let current: Int
     private let total: Int
+    private let showsLabel: Bool
 
-    public init(current: Int, total: Int) {
+    public init(current: Int, total: Int, showsLabel: Bool = true) {
         self.current = current
         self.total = total
+        self.showsLabel = showsLabel
+    }
+
+    public nonisolated static func label(current: Int, total: Int) -> String {
+        let steps = max(total, 0)
+        let reached = min(max(current, 0), steps)
+        return "Step \(reached) of \(steps)"
     }
 
     public var body: some View {
@@ -14,9 +22,11 @@ public struct OursStepProgress: View {
         let reached = min(max(current, 0), steps)
 
         VStack(spacing: OursSpacing.xs) {
-            Text("\(reached) of \(steps)")
-                .oursTextStyle(.bodySmall)
-                .foregroundStyle(OursColor.slate)
+            if showsLabel {
+                Text("\(reached) of \(steps)")
+                    .oursTextStyle(.bodySmall)
+                    .foregroundStyle(OursColor.slate)
+            }
 
             HStack(spacing: OursSpacing.xxs) {
                 ForEach(0..<steps, id: \.self) { index in
@@ -27,6 +37,7 @@ public struct OursStepProgress: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Step \(reached) of \(steps)")
+        .accessibilityLabel(Self.label(current: current, total: total))
+        .accessibilityHidden(!showsLabel)
     }
 }

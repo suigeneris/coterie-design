@@ -114,45 +114,17 @@ public struct OursOwnershipCard<Media: View, Action: View>: View {
         self.hasAction = hasAction
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var stacksAction: Bool { hasAction && dynamicTypeSize.isAccessibilitySize }
+
     public var body: some View {
-        HStack(spacing: OursSpacing.md) {
-            Button(action: onOpen) {
-                HStack(spacing: OursSpacing.md) {
-                    OursShareRing(places: places, filled: filled) { media }
+        let layout = stacksAction
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: OursSpacing.md))
+            : AnyLayout(HStackLayout(spacing: OursSpacing.md))
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(title)
-                            .oursTextStyle(.bodyLargeStrong)
-                            .foregroundStyle(OursColor.ink)
-                            .lineLimit(2)
-                        Text(status)
-                            .oursTextStyle(.bodySmall)
-                            .foregroundStyle(OursColor.slate)
-                        if coOwners.isEmpty {
-                            Text(OursShares.coOwnersPhrase([]))
-                                .oursTextStyle(.bodySmall)
-                                .foregroundStyle(OursColor.stone)
-                                .padding(.top, OursSpacing.xxs)
-                        } else {
-                            OursAvatarGroup(people: coOwners, showsOpenPlace: false, style: .compact)
-                                .padding(.top, OursSpacing.xxs)
-                                .padding(.leading, OursStroke.strong)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                    if !hasAction {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: OursIconSize.sm, weight: .semibold))
-                            .foregroundStyle(OursColor.slate)
-                    }
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(OursShares.cardLabel(title: title, status: status, coOwners: coOwners.map(\.name)))
-            .accessibilityAddTraits(.isButton)
+        layout {
+            openButton
 
             if hasAction {
                 action
@@ -164,6 +136,48 @@ public struct OursOwnershipCard<Media: View, Action: View>: View {
                 .fill(OursColor.surfaceBase)
                 .oursElevation(.small, cornerRadius: OursRadius.md)
         }
+    }
+
+    private var openButton: some View {
+        Button(action: onOpen) {
+            HStack(spacing: OursSpacing.md) {
+                OursShareRing(places: places, filled: filled) { media }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .oursTextStyle(.bodyLargeStrong)
+                        .foregroundStyle(OursColor.ink)
+                        .lineLimit(2)
+                    if OursShares.hasStatus(status) {
+                        Text(status)
+                            .oursTextStyle(.bodySmall)
+                            .foregroundStyle(OursColor.slate)
+                    }
+                    if coOwners.isEmpty {
+                        Text(OursShares.coOwnersPhrase([]))
+                            .oursTextStyle(.bodySmall)
+                            .foregroundStyle(OursColor.stone)
+                            .padding(.top, OursSpacing.xxs)
+                    } else {
+                        OursAvatarGroup(people: coOwners, showsOpenPlace: false, style: .compact)
+                            .padding(.top, OursSpacing.xxs)
+                            .padding(.leading, OursStroke.strong)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if !hasAction {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: OursIconSize.sm, weight: .semibold))
+                        .foregroundStyle(OursColor.slate)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(OursShares.cardLabel(title: title, status: status, coOwners: coOwners.map(\.name)))
+        .accessibilityAddTraits(.isButton)
     }
 }
 

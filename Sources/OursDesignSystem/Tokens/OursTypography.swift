@@ -103,3 +103,14 @@ public extension View {
         font(.ours(style)).lineSpacing(style.lineSpacing)
     }
 }
+
+extension Font {
+    static func ours(_ face: OursFontName, size: CGFloat, relativeTo textStyle: Font.TextStyle) -> Font {
+        OursFonts.registerIfNeeded()
+        return .custom(face.rawValue, size: size, relativeTo: textStyle)
+    }
+
+    static var oursCaptionSemibold: Font {
+        .ours(.interSemiBold, size: OursTextStyle.caption.size, relativeTo: OursTextStyle.caption.relativeTo)
+    }
+}

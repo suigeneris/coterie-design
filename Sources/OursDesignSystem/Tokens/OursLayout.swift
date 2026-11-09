@@ -81,6 +81,8 @@ public enum OursSize {
     public static let thumbnail: CGFloat = 112
     /// 160pt — default side of a photo tile.
     public static let photoTile: CGFloat = 160
+    public static let chipLarge: CGFloat = 56
+    public static let chipTile: CGFloat = 128
 }
 
 /// Point sizes for SF Symbols that stand on their own rather than scaling with text. A symbol

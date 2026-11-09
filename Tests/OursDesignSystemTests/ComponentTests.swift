@@ -108,6 +108,118 @@ struct ChipTests {
     }
 }
 
+struct SizeBadgeTests {
+    @Test func isInkOnYellow() {
+        #expect(OursSizeBadge.background == OursColor.yellow)
+        #expect(OursSizeBadge.foreground == OursColor.ink)
+    }
+
+    @Test func textPairMeetsAA() {
+        let ratio = contrast(OursSizeBadge.foreground, OursSizeBadge.background)
+        #expect(ratio >= 4.5, "ink on yellow is \(String(format: "%.2f", ratio)):1")
+    }
+
+    @Test func isSpokenAsSizeThenTheValue() {
+        #expect(OursSizeBadge.spokenLabel(for: "UK 5") == "Size UK 5")
+        #expect(OursSizeBadge.spokenLabel(for: "  EU 38 ") == "Size EU 38")
+    }
+
+    @Test func detailPaddingIsEightByTwelve() {
+        #expect(OursSizeBadge.Emphasis.detail.verticalPadding == OursSpacing.xs)
+        #expect(OursSizeBadge.Emphasis.detail.horizontalPadding == OursSpacing.sm)
+    }
+
+    @MainActor @Test func stripRendersAboutThirtyOnePointsTall() {
+        let height = renderedHeight(of: OursSizeBadge("UK 5", emphasis: .strip), width: 112)
+        #expect(abs(height - 31) <= 1.5, "strip is \(height)pt")
+    }
+
+    @MainActor @Test func detailRendersAboutFortyEightPointsTall() {
+        let height = renderedHeight(of: OursSizeBadge("UK 5", emphasis: .detail))
+        #expect(abs(height - 48) <= 1.5, "detail is \(height)pt")
+    }
+
+    @MainActor @Test func stripFillsItsContainerWithSquareCorners() throws {
+        let pixels = try #require(RenderedPixels(OursSizeBadge("UK 5", emphasis: .strip).frame(width: 112)))
+        let (right, bottom) = (pixels.pointWidth - 0.5, pixels.pointHeight - 0.5)
+        #expect(pixels.pointWidth == 112)
+        for (pointX, pointY) in [(0.5, 0.5), (right, 0.5), (0.5, bottom), (right, bottom)] {
+            #expect(pixels.isColor(OursSizeBadge.background, x: pointX, y: pointY), "corner at \(pointX), \(pointY)")
+        }
+    }
+
+    @MainActor @Test func detailHugsItsContentAndRoundsItsCorners() throws {
+        let pixels = try #require(RenderedPixels(OursSizeBadge("UK 5", emphasis: .detail)))
+        #expect(pixels.pointWidth < 200)
+        #expect(pixels.isColor(OursSizeBadge.background, x: OursSpacing.xs, y: pixels.pointHeight / 2))
+        #expect(!pixels.isOpaque(x: 0.5, y: 0.5))
+    }
+
+    @Test func aBadgeCanCrossAConcurrencyBoundary() {
+        func requireSendable<T: Sendable>(_: T.Type) {}
+        requireSendable(OursSizeBadge.Emphasis.self)
+    }
+}
+
+@MainActor
+struct ChipSizeTests {
+    private nonisolated static let sizes: [OursChipSize] = [.regular, .large, .tile]
+
+    private func chip(_ size: OursChipSize, isSelected: Bool) -> some View {
+        OursChip("2", isSelected: isSelected, size: size) {}
+            .frame(width: 160, alignment: .leading)
+    }
+
+    @Test(arguments: sizes)
+    func everySizeRendersAtLeastTheTouchTarget(_ size: OursChipSize) {
+        #expect(renderedHeight(of: chip(size, isSelected: false)) >= OursSize.minimumTouchTarget)
+    }
+
+    @Test func largeRendersFiftySixTallAndTileOneTwentyEight() {
+        #expect(abs(renderedHeight(of: chip(.large, isSelected: false)) - 56) <= 0.5)
+        #expect(abs(renderedHeight(of: chip(.tile, isSelected: false)) - 128) <= 0.5)
+    }
+
+    @Test func largeSetsItsValueInH3AndTileSetsItsLabelAsAButton() {
+        #expect(OursChipSize.regular.textStyle == .body)
+        #expect(OursChipSize.large.textStyle == .h3)
+        #expect(OursChipSize.tile.textStyle == .button)
+    }
+
+    @Test func tileIsRoundedAtMediumAndTheOthersAtExtraSmall() {
+        #expect(OursChipSize.regular.cornerRadius == OursRadius.xs)
+        #expect(OursChipSize.large.cornerRadius == OursRadius.xs)
+        #expect(OursChipSize.tile.cornerRadius == OursRadius.md)
+    }
+
+    @Test func largeAndTileShareTheWidthOfAGridAndRegularHugsItsLabel() {
+        #expect(!OursChipSize.regular.fillsWidth)
+        #expect(OursChipSize.large.fillsWidth)
+        #expect(OursChipSize.tile.fillsWidth)
+    }
+
+    @Test func onlyTheTileStacksItsSymbolAboveItsLabel() {
+        #expect(!OursChipSize.regular.stacksSymbol)
+        #expect(!OursChipSize.large.stacksSymbol)
+        #expect(OursChipSize.tile.stacksSymbol)
+    }
+
+    @Test(arguments: sizes, [true, false])
+    func fillEdgeAndLabelAreTheChipColoursAtEverySize(_ size: OursChipSize, _ isSelected: Bool) throws {
+        let pixels = try #require(RenderedPixels(chip(size, isSelected: isSelected)))
+        let middle = pixels.pointHeight / 2
+        let fill = OursChip.background(isSelected: isSelected)
+        #expect(pixels.isColor(fill, x: 6, y: middle), "\(size) fill")
+        #expect(pixels.isColor(OursChip.border(isSelected: isSelected) ?? fill, x: 0.5, y: middle), "\(size) edge")
+        #expect(pixels.contains(OursChip.foreground(isSelected: isSelected)), "\(size) label")
+    }
+
+    @Test func aSizeCanCrossAConcurrencyBoundary() {
+        func requireSendable<T: Sendable>(_: T.Type) {}
+        requireSendable(OursChipSize.self)
+    }
+}
+
 struct ComponentContrastTests {
     /// The ownership card is white now: title ink, status slate, "Just you so far" stone.
     @Test func ownershipCardTextMeetsAAOnWhite() {
@@ -193,6 +305,15 @@ struct OwnershipCardWordingTests {
                 == "Puzzle Bag. 1 place left. With Amara.")
         #expect(OursShares.cardLabel(title: "New item", status: "2 places left", coOwners: [])
                 == "New item. 2 places left. Just you so far.")
+    }
+
+    @Test func anEmptyStatusIsLeftOutOfTheSentence() {
+        #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "", coOwners: ["Amara O."])
+                == "Puzzle Bag. With Amara O.")
+        #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "  \n ", coOwners: ["Amara O."])
+                == "Puzzle Bag. With Amara O.")
+        #expect(OursShares.cardLabel(title: "New item", status: "", coOwners: [])
+                == "New item. Just you so far.")
     }
 }
 
