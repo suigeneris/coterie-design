@@ -229,7 +229,8 @@ struct LayoutTests {
     @Test func fixedSizesFollowTheFourPointGrid() {
         let sizes: [CGFloat] = [
             OursSize.progressTrack, OursSize.overlayButton, OursSize.avatar, OursSize.avatarCompact, OursSize.shareRing, OursSize.iconTile,
-            OursSize.figureDisc, OursSize.statusDisc, OursSize.thumbnail, OursSize.photoTile
+            OursSize.figureDisc, OursSize.statusDisc, OursSize.thumbnail, OursSize.photoTile,
+            OursSize.chipLarge, OursSize.chipTile
         ]
         for value in sizes {
             #expect(value.truncatingRemainder(dividingBy: 4) == 0, "size \(value) is off the 4pt grid")

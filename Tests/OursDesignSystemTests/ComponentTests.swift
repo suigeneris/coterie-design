@@ -108,6 +108,110 @@ struct ChipTests {
     }
 }
 
+struct SizeBadgeTests {
+    @Test func isInkOnYellow() {
+        #expect(OursSizeBadge.background == OursColor.yellow)
+        #expect(OursSizeBadge.foreground == OursColor.ink)
+    }
+
+    @Test func textPairMeetsAA() {
+        let ratio = contrast(OursSizeBadge.foreground, OursSizeBadge.background)
+        #expect(ratio >= 4.5, "ink on yellow is \(String(format: "%.2f", ratio)):1")
+    }
+
+    @Test func isSpokenAsSizeThenTheValue() {
+        #expect(OursSizeBadge.spokenLabel(for: "UK 5") == "Size UK 5")
+        #expect(OursSizeBadge.spokenLabel(for: "  EU 38 ") == "Size EU 38")
+    }
+
+    @Test func stripFillsTheWidthWithSquareCornersAndFourPointsAboveAndBelow() {
+        #expect(OursSizeBadge.Emphasis.strip.fillsWidth)
+        #expect(OursSizeBadge.Emphasis.strip.cornerRadius == 0)
+        #expect(OursSizeBadge.Emphasis.strip.verticalPadding == OursSpacing.xxs)
+    }
+
+    @Test func detailHugsItsContentWithRoundedCornersAndEightByFourteenPadding() {
+        #expect(!OursSizeBadge.Emphasis.detail.fillsWidth)
+        #expect(OursSizeBadge.Emphasis.detail.cornerRadius == OursRadius.xs)
+        #expect(OursSizeBadge.Emphasis.detail.verticalPadding == OursSpacing.xs)
+        #expect(OursSizeBadge.Emphasis.detail.horizontalPadding == 14)
+    }
+
+    @Test func valueSitsOnTheLineHeightOfItsTextStyle() {
+        #expect(OursSizeBadge.Emphasis.strip.valueLineHeight == OursTextStyle.bodyLargeStrong.lineHeight)
+        #expect(OursSizeBadge.Emphasis.detail.valueLineHeight == OursTextStyle.h2.lineHeight)
+    }
+
+    @Test func aBadgeCanCrossAConcurrencyBoundary() {
+        func requireSendable<T: Sendable>(_: T.Type) {}
+        requireSendable(OursSizeBadge.Emphasis.self)
+    }
+}
+
+struct ChipSizeTests {
+    private static let sizes: [OursChipSize] = [.regular, .large, .tile]
+
+    @Test(arguments: sizes)
+    func everySizeMeetsTheTouchTarget(_ size: OursChipSize) {
+        #expect(size.height >= OursSize.minimumTouchTarget)
+    }
+
+    @Test func largeIsFiftySixTallAndTileIsOneTwentyEight() {
+        #expect(OursChipSize.regular.height == OursSize.minimumTouchTarget)
+        #expect(OursChipSize.large.height == 56)
+        #expect(OursChipSize.tile.height == 128)
+    }
+
+    @Test func largeSetsItsValueInH3AndTileSetsItsLabelAsAButton() {
+        #expect(OursChipSize.regular.textStyle == .body)
+        #expect(OursChipSize.large.textStyle == .h3)
+        #expect(OursChipSize.tile.textStyle == .button)
+    }
+
+    @Test func tileIsRoundedAtMediumAndTheOthersAtExtraSmall() {
+        #expect(OursChipSize.regular.cornerRadius == OursRadius.xs)
+        #expect(OursChipSize.large.cornerRadius == OursRadius.xs)
+        #expect(OursChipSize.tile.cornerRadius == OursRadius.md)
+    }
+
+    @Test func largeAndTileShareTheWidthOfAGridAndRegularHugsItsLabel() {
+        #expect(!OursChipSize.regular.fillsWidth)
+        #expect(OursChipSize.large.fillsWidth)
+        #expect(OursChipSize.tile.fillsWidth)
+    }
+
+    @Test func onlyTheTileStacksItsSymbolAboveItsLabel() {
+        #expect(!OursChipSize.regular.stacksSymbol)
+        #expect(!OursChipSize.large.stacksSymbol)
+        #expect(OursChipSize.tile.stacksSymbol)
+        #expect(OursChipSize.tile.symbolSize == OursIconSize.lg)
+    }
+
+    @MainActor @Test(arguments: [true, false])
+    func coloursAreTheSameAtEverySize(_ isSelected: Bool) {
+        for size in Self.sizes {
+            let chip = OursChip("2", isSelected: isSelected, size: size) {}
+            #expect(chip.fillColor == OursChip.background(isSelected: isSelected), "\(size) fill")
+            #expect(chip.labelColor == OursChip.foreground(isSelected: isSelected), "\(size) label")
+            #expect(chip.edgeColor == OursChip.border(isSelected: isSelected), "\(size) edge")
+        }
+    }
+
+    @MainActor @Test(arguments: [true, false])
+    func labelMeetsAAOnItsFillAtEverySize(_ isSelected: Bool) {
+        for size in Self.sizes {
+            let chip = OursChip("2", isSelected: isSelected, size: size) {}
+            let ratio = contrast(chip.labelColor, chip.fillColor)
+            #expect(ratio >= 4.5, "\(size) isSelected \(isSelected) is \(String(format: "%.2f", ratio)):1")
+        }
+    }
+
+    @Test func aSizeCanCrossAConcurrencyBoundary() {
+        func requireSendable<T: Sendable>(_: T.Type) {}
+        requireSendable(OursChipSize.self)
+    }
+}
+
 struct ComponentContrastTests {
     /// The ownership card is white now: title ink, status slate, "Just you so far" stone.
     @Test func ownershipCardTextMeetsAAOnWhite() {
