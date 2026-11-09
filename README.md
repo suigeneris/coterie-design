@@ -64,7 +64,7 @@ VStack(spacing: OursSpacing.md) {
 | `OursSizeBadge` | A size such as `UK 5`: a strip under a thumbnail (`.strip`) or a larger badge beside the name (`.detail`) |
 | `OursChip` · `OursTextArea` | Selection chip in three sizes (`.regular`, `.large`, `.tile` with a symbol above its label), multi-line text field with a code-point counter |
 | `OursFundingBar` · `OursStepProgress` · `OursSkeleton` | Progress bars with labels (or the track alone, with `showsLabel: false`, when the caller shows the label), and a loading placeholder |
-| `OursAvatarGroup` · `OursPhotoTile` | Initials or remote avatars with an open place, and a `You` avatar (`isYou: true`), and a photo add, preparing and preview tile |
+| `OursAvatarGroup` · `OursPhotoTile` | Initials, remote or `You` (`isYou: true`) avatars with an open place, and a photo add, preparing and preview tile |
 | `OursProductCard` · `OursOwnershipCard` · `OursInformationCard` | Cards that take strings and slots, never a domain type |
 | `OursShareRing` | One arc per place around the item's photo; closes into a circle when full |
 

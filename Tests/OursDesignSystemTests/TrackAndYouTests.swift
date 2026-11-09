@@ -3,34 +3,6 @@ import SwiftUI
 @testable import OursDesignSystem
 
 @MainActor
-func accessibilityLabels<V: View>(of view: V) -> [String] {
-    let host = UIHostingController(rootView: view.frame(width: 300, height: 100))
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 300, height: 100))
-    window.rootViewController = host
-    window.makeKeyAndVisible()
-    host.view.layoutIfNeeded()
-    var labels: [String] = []
-    func walk(_ node: NSObject) {
-        if node.isAccessibilityElement { labels.append(node.accessibilityLabel ?? "") }
-        let count = node.accessibilityElementCount()
-        if count != NSNotFound {
-            for index in 0..<count {
-                if let child = node.accessibilityElement(at: index) as? NSObject { walk(child) }
-            }
-        }
-        for child in (node.accessibilityElements ?? []).compactMap({ $0 as? NSObject }) { walk(child) }
-        for child in (node as? UIView)?.subviews ?? [] { walk(child) }
-    }
-    walk(host.view)
-    return labels
-}
-
-@MainActor
-func renderedHeight<V: View>(of view: V) -> CGFloat {
-    ImageRenderer(content: view.frame(width: 200)).uiImage?.size.height ?? 0
-}
-
-@MainActor
 struct LabellessTrackTests {
     @Test func aStepTrackWithoutItsLabelIsJustTheTrack() {
         #expect(renderedHeight(of: OursStepProgress(current: 1, total: 3, showsLabel: false)) == OursSize.progressTrack)
@@ -72,11 +44,13 @@ struct YouAvatarTests {
         #expect(OursAvatarGroup.Person(id: UUID(), name: "Seed A", imageURL: nil, isYou: true).isYou)
     }
 
-    @Test func youIsSpokenAsYouWhateverTheName() {
-        let you = OursAvatarGroup.Person(id: UUID(), name: "Jonathan Aguele", imageURL: nil, isYou: true)
-        #expect(OursAvatarGroup.spokenName(for: you) == "You")
-        let blank = OursAvatarGroup.Person(id: UUID(), name: "", imageURL: nil, isYou: true)
-        #expect(OursAvatarGroup.spokenName(for: blank) == "You")
+    @Test func youIsSpokenAsYouWhateverTheNameOrPhoto() {
+        let url = URL(string: "https://example.com/me.jpg")
+        for (name, imageURL) in [("Jonathan Aguele", nil), ("", nil), ("Jonathan Aguele", url)] {
+            let you = OursAvatarGroup.Person(id: UUID(), name: name, imageURL: imageURL, isYou: true)
+            #expect(OursAvatarGroup.spokenName(for: you) == OursAvatarGroup.youLabel)
+        }
+        #expect(OursAvatarGroup.youLabel == "You")
     }
 
     @Test func everyoneElseIsSpokenByName() {
@@ -93,11 +67,12 @@ struct YouAvatarTests {
         #expect(ratio >= 4.5, "white on forest is \(String(format: "%.2f", ratio)):1")
     }
 
-    @Test func youIgnoresThePhoto() {
+    @MainActor @Test func youIgnoresThePhoto() throws {
         let url = URL(string: "https://example.com/me.jpg")
-        #expect(OursAvatarGroup.Person(id: UUID(), name: "Ann", imageURL: url).showsPhoto)
-        #expect(!OursAvatarGroup.Person(id: UUID(), name: "Ann", imageURL: nil).showsPhoto)
-        #expect(!OursAvatarGroup.Person(id: UUID(), name: "Ann", imageURL: url, isYou: true).showsPhoto)
+        let you = OursAvatarGroup.Person(id: UUID(), name: "Ann", imageURL: url, isYou: true)
+        let pixels = try #require(RenderedPixels(OursAvatarGroup(people: [you], showsOpenPlace: false)))
+        #expect(pixels.isColor(OursAvatarGroup.youBackground, x: 4, y: pixels.pointHeight / 2))
+        #expect(pixels.contains(OursAvatarGroup.youForeground))
     }
 
     @MainActor @Test(arguments: [OursAvatarGroup.Style.standard, .compact])

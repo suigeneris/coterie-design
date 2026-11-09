@@ -11,7 +11,7 @@ public struct OursSizeBadge: View {
 
         var verticalPadding: CGFloat { self == .strip ? OursSpacing.xxs : OursSpacing.xs }
 
-        var horizontalPadding: CGFloat { self == .strip ? 0 : 14 }
+        var horizontalPadding: CGFloat { self == .strip ? 0 : OursSpacing.sm }
 
         var valueLineHeight: CGFloat? {
             self == .strip ? OursTextStyle.bodyLargeStrong.lineHeight : OursTextStyle.h2.lineHeight

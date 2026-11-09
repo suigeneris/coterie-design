@@ -13,8 +13,6 @@ public struct OursAvatarGroup: View {
             self.imageURL = imageURL
             self.isYou = isYou
         }
-
-        var showsPhoto: Bool { !isYou && imageURL != nil }
     }
 
     /// `.standard`: 32pt circles, 8pt apart. `.compact`: 24pt circles overlapping by 6, each
@@ -54,8 +52,10 @@ public struct OursAvatarGroup: View {
 
     nonisolated static let youForeground = Color.white
 
+    nonisolated static let youLabel = "You"
+
     nonisolated static func spokenName(for person: Person) -> String {
-        person.isYou ? "You" : spokenName(for: person.name)
+        person.isYou ? youLabel : spokenName(for: person.name)
     }
 
     public var body: some View {
@@ -99,13 +99,13 @@ private struct OursAvatar: View {
     @ViewBuilder
     private var content: some View {
         if person.isYou {
-            Text("You")
+            Text(OursAvatarGroup.youLabel)
                 .font(.oursCaptionSemibold)
                 .foregroundStyle(OursAvatarGroup.youForeground)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
-        } else if person.showsPhoto, let url = person.imageURL {
+        } else if let url = person.imageURL {
             AsyncImage(url: url) { phase in
                 switch phase {
                 case .success(let image):

@@ -26,8 +26,6 @@ public enum OursChipSize: Sendable {
     var fillsWidth: Bool { self != .regular }
 
     var stacksSymbol: Bool { self == .tile }
-
-    var symbolSize: CGFloat { OursIconSize.lg }
 }
 
 public struct OursChip: View {
@@ -65,23 +63,17 @@ public struct OursChip: View {
         isSelected ? nil : OursColor.outline
     }
 
-    var fillColor: Color { Self.background(isSelected: isSelected) }
-
-    var labelColor: Color { Self.foreground(isSelected: isSelected) }
-
-    var edgeColor: Color? { Self.border(isSelected: isSelected) }
-
     public var body: some View {
         Button(action: action) {
             content
-                .foregroundStyle(labelColor)
+                .foregroundStyle(Self.foreground(isSelected: isSelected))
                 .padding(.horizontal, OursSpacing.md)
                 .frame(maxWidth: size.fillsWidth ? .infinity : nil, minHeight: size.height)
-                .background(fillColor)
+                .background(Self.background(isSelected: isSelected))
                 .clipShape(shape)
                 .overlay {
-                    if let edgeColor {
-                        shape.strokeBorder(edgeColor, lineWidth: OursStroke.hairline)
+                    if let border = Self.border(isSelected: isSelected) {
+                        shape.strokeBorder(border, lineWidth: OursStroke.hairline)
                     }
                 }
                 .contentShape(shape)
@@ -113,15 +105,15 @@ public struct OursChip: View {
     @ViewBuilder
     private var symbol: some View {
         if let systemImage {
-            if size.stacksSymbol {
-                Image(systemName: systemImage)
-                    .font(.system(size: size.symbolSize))
-                    .accessibilityHidden(true)
-            } else {
-                Image(systemName: systemImage)
-                    .imageScale(.small)
-                    .accessibilityHidden(true)
+            let image = Image(systemName: systemImage)
+            Group {
+                if size.stacksSymbol {
+                    image.font(.system(size: OursIconSize.lg))
+                } else {
+                    image.imageScale(.small)
+                }
             }
+            .accessibilityHidden(true)
         }
     }
 
