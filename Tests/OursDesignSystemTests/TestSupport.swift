@@ -27,8 +27,10 @@ func accessibilityLabels<V: View>(of view: V) -> [String] {
 }
 
 @MainActor
-func renderedHeight<V: View>(of view: V, width: CGFloat = 200) -> CGFloat {
-    ImageRenderer(content: view.frame(width: width)).uiImage?.size.height ?? 0
+func renderedHeight<V: View>(of view: V, width: CGFloat = 200, scale: CGFloat = 1) -> CGFloat {
+    let renderer = ImageRenderer(content: view.frame(width: width))
+    renderer.scale = scale
+    return renderer.uiImage?.size.height ?? 0
 }
 
 struct RenderedPixels: CustomStringConvertible {
@@ -84,6 +86,21 @@ struct RenderedPixels: CustomStringConvertible {
             }
         }
         return false
+    }
+
+    func horizontalExtent(of color: Color, tolerance: Double = 0.02) -> CGFloat {
+        var leftmost = pixelWidth
+        var rightmost = -1
+        for row in 0..<pixelHeight {
+            for column in 0..<pixelWidth {
+                let pixel = pixelAt(column: column, row: row)
+                if pixel.alpha > 0.99 && pixel.matches(color, tolerance: tolerance) {
+                    leftmost = min(leftmost, column)
+                    rightmost = max(rightmost, column)
+                }
+            }
+        }
+        return rightmost < leftmost ? 0 : CGFloat(rightmost - leftmost + 1) / scale
     }
 
     private func pixel(x pointX: CGFloat, y pointY: CGFloat) -> Pixel? {

@@ -306,6 +306,15 @@ struct OwnershipCardWordingTests {
         #expect(OursShares.cardLabel(title: "New item", status: "2 places left", coOwners: [])
                 == "New item. 2 places left. Just you so far.")
     }
+
+    @Test func anEmptyStatusIsLeftOutOfTheSentence() {
+        #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "", coOwners: ["Amara O."])
+                == "Puzzle Bag. With Amara O.")
+        #expect(OursShares.cardLabel(title: "Puzzle Bag", status: "  \n ", coOwners: ["Amara O."])
+                == "Puzzle Bag. With Amara O.")
+        #expect(OursShares.cardLabel(title: "New item", status: "", coOwners: [])
+                == "New item. Just you so far.")
+    }
 }
 
 struct CompactSizeTests {

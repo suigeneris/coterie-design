@@ -57,7 +57,12 @@ public enum OursShares {
     /// is added: VoiceOver would read "Amara O.." as a pause, and a braille display shows both.
     public static func cardLabel(title: String, status: String, coOwners: [String]) -> String {
         let who = coOwnersPhrase(coOwners)
-        return "\(title). \(status). \(who)" + (who.hasSuffix(".") ? "" : ".")
+        let lead = hasStatus(status) ? "\(title). \(status)." : "\(title)."
+        return "\(lead) \(who)" + (who.hasSuffix(".") ? "" : ".")
+    }
+
+    static func hasStatus(_ status: String) -> Bool {
+        !status.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
 
