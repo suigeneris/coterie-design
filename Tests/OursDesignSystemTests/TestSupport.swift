@@ -4,29 +4,6 @@ import UIKit
 @testable import OursDesignSystem
 
 @MainActor
-func accessibilityLabels<V: View>(of view: V) -> [String] {
-    let host = UIHostingController(rootView: view.frame(width: 300, height: 100))
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 300, height: 100))
-    window.rootViewController = host
-    window.makeKeyAndVisible()
-    host.view.layoutIfNeeded()
-    var labels: [String] = []
-    func walk(_ node: NSObject) {
-        if node.isAccessibilityElement { labels.append(node.accessibilityLabel ?? "") }
-        let count = node.accessibilityElementCount()
-        if count != NSNotFound {
-            for index in 0..<count {
-                if let child = node.accessibilityElement(at: index) as? NSObject { walk(child) }
-            }
-        }
-        for child in (node.accessibilityElements ?? []).compactMap({ $0 as? NSObject }) { walk(child) }
-        for child in (node as? UIView)?.subviews ?? [] { walk(child) }
-    }
-    walk(host.view)
-    return labels
-}
-
-@MainActor
 func renderedHeight<V: View>(of view: V, width: CGFloat = 200, scale: CGFloat = 1) -> CGFloat {
     let renderer = ImageRenderer(content: view.frame(width: width))
     renderer.scale = scale

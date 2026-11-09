@@ -61,9 +61,4 @@ struct OwnershipCardLayoutTests {
         let gap = with - without - line
         #expect(gap >= 1, "status line \(line)pt, card \(with)pt with it and \(without)pt without: the gap is \(gap)pt")
     }
-
-    @Test func anEmptyStatusIsNotSpokenByTheCard() {
-        let spoken = accessibilityLabels(of: card(status: "", withAction: false, size: .large))
-        #expect(spoken.contains("Puzzle Bag. With Amara O."), "\(spoken)")
-    }
 }

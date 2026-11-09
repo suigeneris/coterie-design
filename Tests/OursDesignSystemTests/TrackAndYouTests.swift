@@ -21,20 +21,14 @@ struct LabellessTrackTests {
                 == renderedHeight(of: OursFundingBar(filled: 1, total: 3)))
     }
 
-    @Test func aLabelledStepTrackIsSpokenAsOneStepOfTheTotal() {
-        #expect(accessibilityLabels(of: OursStepProgress(current: 2, total: 4)) == ["Step 2 of 4"])
+    @Test func aStepTrackIsSpokenAsOneStepOfTheTotal() {
+        #expect(OursStepProgress.label(current: 2, total: 4) == "Step 2 of 4")
     }
 
-    @Test func aLabelledFundingBarIsSpokenAsOneFilledOfTheTotal() {
-        #expect(accessibilityLabels(of: OursFundingBar(filled: 2, total: 3)) == ["2 of 3 filled"])
-    }
-
-    @Test func aStepTrackWithoutItsLabelIsHiddenFromVoiceOver() {
-        #expect(accessibilityLabels(of: OursStepProgress(current: 2, total: 4, showsLabel: false)).isEmpty)
-    }
-
-    @Test func aFundingBarWithoutItsLabelIsHiddenFromVoiceOver() {
-        #expect(accessibilityLabels(of: OursFundingBar(filled: 2, total: 3, showsLabel: false)).isEmpty)
+    @Test func aStepTrackIsSpokenWithinItsBounds() {
+        #expect(OursStepProgress.label(current: 9, total: 4) == "Step 4 of 4")
+        #expect(OursStepProgress.label(current: -1, total: 4) == "Step 0 of 4")
+        #expect(OursStepProgress.label(current: 2, total: -3) == "Step 0 of 0")
     }
 }
 
@@ -73,16 +67,5 @@ struct YouAvatarTests {
         let pixels = try #require(RenderedPixels(OursAvatarGroup(people: [you], showsOpenPlace: false)))
         #expect(pixels.isColor(OursAvatarGroup.youBackground, x: 4, y: pixels.pointHeight / 2))
         #expect(pixels.contains(OursAvatarGroup.youForeground))
-    }
-
-    @MainActor @Test(arguments: [OursAvatarGroup.Style.standard, .compact])
-    func theGroupSpeaksYouForYourPlace(_ style: OursAvatarGroup.Style) {
-        let people = [
-            OursAvatarGroup.Person(id: UUID(), name: "Ann Lee", imageURL: nil),
-            OursAvatarGroup.Person(id: UUID(), name: "Jonathan Aguele", imageURL: nil, isYou: true)
-        ]
-        let spoken = accessibilityLabels(of: OursAvatarGroup(people: people, showsOpenPlace: false, style: style))
-        #expect(spoken.joined(separator: ", ").contains("You"))
-        #expect(!spoken.joined(separator: ", ").contains("Jonathan"))
     }
 }

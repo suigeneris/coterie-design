@@ -11,6 +11,12 @@ public struct OursStepProgress: View {
         self.showsLabel = showsLabel
     }
 
+    public nonisolated static func label(current: Int, total: Int) -> String {
+        let steps = max(total, 0)
+        let reached = min(max(current, 0), steps)
+        return "Step \(reached) of \(steps)"
+    }
+
     public var body: some View {
         let steps = max(total, 0)
         let reached = min(max(current, 0), steps)
@@ -31,7 +37,7 @@ public struct OursStepProgress: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Step \(reached) of \(steps)")
+        .accessibilityLabel(Self.label(current: current, total: total))
         .accessibilityHidden(!showsLabel)
     }
 }
